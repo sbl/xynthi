@@ -259,7 +259,7 @@
 	displayGui: {|self, parent, title=\Synth|
 		var w, v, newwin;
 		(parent.isNil).if({
-			w=MultiPageLayout.new(title, nil, 10@0, false);
+			w=PageLayout.new(title, nil, 10@0, false);
 			newwin=true;
 			w.view.background_(self.elementStyle.bgcolor);
 		}, {

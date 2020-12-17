@@ -187,7 +187,7 @@ SynthDef(\lfo_bdust, {
 )
 /*
 (
-~lfoWin=MultiPageLayout.new(\LFOs);
+~lfoWin=PageLayout.new(\LFOs);
 // ~lfoWin.view.background_(Color.black);
 ~lfoInstr.theSynth.outbus=Bus.control;
 ~lfoInstr.theSynth.playSynth([\out, ~lfoInstr.theSynth.outbus.index]);

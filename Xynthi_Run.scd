@@ -292,7 +292,7 @@ Routine({
 	// make the window
 	"Creating GUI".postln;
 	{
-		~synthWin=MultiPageLayout("Xynthi");
+		~synthWin=PageLayout("Xynthi");
 		ActionButton(~synthWin, " Save ", {
 			Dialog.savePanel({|path|
 				var state;
@@ -341,7 +341,7 @@ Routine({
 			.states_([["Batch"]])
 			.action_({
 				var win, pres, size;
-				SelectButtonSet(win=MultiPageLayout.new("Select group:"),
+				SelectButtonSet(win=PageLayout.new("Select group:"),
 					["Main", "Matrix", "ModPod"],
 					{|in|
 						switch (in)

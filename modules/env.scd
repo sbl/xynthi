@@ -276,7 +276,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 )
 /*
 (
-~envWin=MultiPageLayout.new(\Envs);
+~envWin=PageLayout.new(\Envs);
 ~envWin.view.background_(Color.blue(0.2, 0.5));
 // ~envWin.view.background_(Color.black);
 ~envInstr.theSynth.outbus=Bus.control;
