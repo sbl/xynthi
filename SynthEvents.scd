@@ -46,7 +46,7 @@
 	busDictionary: nil,
 	makeBusDictionary: nil,
 	makeNodeMap: {|self|
-		(self.nodeMap.isNil).if({ self.nodeMap=NodeMap.new });
+		(self.nodeMap.isNil).if({ self.nodeMap=ProxyNodeMap.new });
 		(self.busDictionary.isNil).if({ self.makeBusDictionary });
 		self.busDictionary.keysValuesDo({|key, value|
 			self.nodeMap.map(key, value);
@@ -121,7 +121,7 @@
 			));
 			msg=msg.add(self.synthObj.runMsg(run));
 			mapArr=Array.new;
-			self.nodeMap.settings.keysValuesDo({|k, v|
+			self.nodeMap.keysValuesDo({|k, v|
 				mapArr=mapArr.add(k);
 				mapArr=mapArr.add(v.value);
 			});
