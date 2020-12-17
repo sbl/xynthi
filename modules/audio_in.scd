@@ -7,7 +7,7 @@
 
 SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 	var input, amplitude;
-	input=AudioIn.ar(in);
+	input=SoundIn.ar(in);
 	amplitude=Amplitude.kr(input);
 	amp=amp * Lag.kr(amplitude > gate, 0.02);
 	Out.ar(out, input * amp)

@@ -303,15 +303,15 @@
 		outputDictionary=Dictionary.new;
 		self.elementDictionary.keysValuesDo({|key, value|
 			// some special cases.  could be expanded
-			((value.isKindOf(SCRangeSlider)) || (value.isKindOf(SC2DSlider)) ||
+			((value.isKindOf(RangeSlider)) || (value.isKindOf(Slider2D)) ||
 				(value.isKindOf(Function))).if({
 				switch (value.class)
-				{ SCRangeSlider } {
+				{ RangeSlider } {
 					outputDictionary.add(key ->
 						Dictionary[\activeLo_ -> value.lo, \activeHi_ -> value.hi]
 					);
 				}
-				{ SC2DSlider } {
+        { Slider2D } {
 					outputDictionary.add(key ->
 						Dictionary[\activex_ -> value.x, \activey_ -> value.y]
 					);
