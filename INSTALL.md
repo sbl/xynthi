@@ -11,7 +11,7 @@ classes:
 quarks:
 
 - cruciallib
-
+- ixiViews
 
 
 plugins:
