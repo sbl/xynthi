@@ -97,7 +97,7 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 			})
 		});
 		self.numQuicks.do({|i|
-			SCButton(w, 18@16)
+			Button(w, 18@16)
 				.states_([[(i + 1).asString]])
 				.mouseDownAction_({|v, x, y, mod|
 					var state;
