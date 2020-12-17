@@ -10,7 +10,7 @@ SynthDef(\lfo_sine, {
 			LFCub.kr(freq, i_phase, amp)
 		)
 	}
-).send(s);
+).add;
 
 SynthDef(\lfo_saw, {
 		|out=0, freq=1, i_phase=0, amp=1|
@@ -18,7 +18,7 @@ SynthDef(\lfo_saw, {
 			LFSaw.kr(freq, i_phase, amp)
 		)
 	}
-).send(s);
+).add;
 
 SynthDef(\lfo_pulse, {
 		|out=0, freq=1, i_phase=0, pw=0.5, amp=1, add=0|
@@ -26,7 +26,7 @@ SynthDef(\lfo_pulse, {
 			LFPulse.kr(freq, i_phase, pw, amp, add)
 		)
 	}
-).send(s);
+).add;
 
 SynthDef(\lfo_sh, {
 		|out=0, freq=1, amp=1|
@@ -34,7 +34,7 @@ SynthDef(\lfo_sh, {
 			LFDNoise0.kr(freq, amp)
 		)
 	}
-).send(s);
+).add;
 
 SynthDef(\lfo_jitter, {
 		|out=0, freq=1, amp=1|
@@ -44,21 +44,21 @@ SynthDef(\lfo_jitter, {
 			LFDNoise3.kr(freq.ring1(Latch.kr(dust, dust.abs)), amp)
 		)
 	}
-).send(s);
+).add;
 
 SynthDef(\lfo_dust, {
 	|out=0, freq=1, amp=1|
 	var dust;
 	dust=Dust2.kr(freq, amp);
 	Out.kr(out, Latch.kr(dust, dust.abs))
-}).send(s);
+}).add;
 
 SynthDef(\lfo_bdust, {
 	|out=0, freq=1, amp=1|
 	var dust;
 	dust=Dust2.kr(freq);
 	Out.kr(out, TBrownRand.kr(amp.neg, amp, 1.0, 1, dust.abs))
-}).send(s);
+}).add;
 
 // synthObj //
 ~lfoSynth=~busControlledSynth.reproduce;

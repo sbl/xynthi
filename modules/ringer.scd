@@ -6,27 +6,27 @@
 // synthDef //
 SynthDef(\bp_1, {|in=21, out=0|
 		Out.ar(out, In.ar(in));
-}).send(s);
+}).add;
 
 SynthDef(\ring_mul, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in) * In.ar(ring_in) * depth)
-}).send(s);
+}).add;
 
 SynthDef(\ring_ring1, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring1(In.ar(ring_in) * depth))
-}).send(s);
+}).add;
 
 SynthDef(\ring_ring2, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring2(In.ar(ring_in) * depth))
-}).send(s);
+}).add;
 
 SynthDef(\ring_ring3, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring3(In.ar(ring_in) * depth))
-}).send(s);
+}).add;
 
 SynthDef(\ring_ring4, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring4(In.ar(ring_in) * depth))
-}).send(s);
+}).add;
 
 // synthObj //
 ~ringer=~busControlledSynth.reproduce;

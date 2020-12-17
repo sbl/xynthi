@@ -8,23 +8,23 @@
 
 SynthDef(\noise_white, {|out=0, amp=1|
 	Out.ar(out, WhiteNoise.ar(amp))
-}).send(s);
+}).add;
 
 SynthDef(\noise_pink, {|out=0, amp=1|
 	Out.ar(out, PinkNoise.ar(amp))
-}).send(s);
+}).add;
 
 SynthDef(\noise_brown, {|out=0, amp=1|
 	Out.ar(out, BrownNoise.ar(amp))
-}).send(s);
+}).add;
 
 SynthDef(\noise_gray, {|out=0, amp=1|
 	Out.ar(out, GrayNoise.ar(amp))
-}).send(s);
+}).add;
 
 SynthDef(\noise_clip, {|out=0, amp=1|
 	Out.ar(out, WhiteNoise.ar(amp))
-}).send(s);
+}).add;
 
 // synthObj //
 ~noise=~busControlledSynth.reproduce;

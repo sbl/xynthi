@@ -10,14 +10,14 @@ SynthDef(\ac_env, {|in=10, out=0, ctrl_out=32, timescale=1, mul=2, add= -1, gate
 	envelope=EnvGen.kr(env, gate, timeScale:timescale);
 	Out.kr(ctrl_out, envelope * mul + add);
 	Out.ar(out, In.ar(in) * envelope);
-}).send(s);
+}).add;
 
 SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 	var env, envelope;
 	env=Control.names([\env]).kr(Env.newClear(9).asArray);
 	envelope=EnvGen.kr(env, gate, timeScale:timescale);
 	Out.kr(ctrl_out, envelope * mul + add);
-}).send(s);
+}).add;
 
 // synthObj //
 ~envSynth=~busControlledSynth.reproduce;

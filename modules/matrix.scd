@@ -3,11 +3,11 @@
 (
 SynthDef(\matrix_router, {|i_in=32, i_out=0|
 	Out.ar(i_out, In.ar(i_in));
-}).send(s);
+}).add;
 
 SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 	Out.ar(i_out, InFeedback.ar(i_in));
-}).send(s);
+}).add;
 
 ~audioMatrix = (
 	reproduce: {|self|

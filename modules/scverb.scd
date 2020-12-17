@@ -6,7 +6,7 @@
 // synthDef //
 SynthDef(\bp_2, {|in=21, out=0|
 		Out.ar(out, In.ar(in, 2));
-}).send(s);
+}).add;
 
 SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -28,7 +28,7 @@ SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * [Mix.ar([filts[0], filts[2], filts[4], filts[6]]), Mix.ar([filts[1], filts[3], filts[5], filts[7]])])
 	);
-}).send(s);
+}).add;
 
 SynthDef(\scverb_12, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -50,7 +50,7 @@ SynthDef(\scverb_12, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * [Mix.ar([filts[0], filts[2], filts[4], filts[6]]), Mix.ar([filts[1], filts[3], filts[5], filts[7]])])
 	);
-}).send(s);
+}).add;
 
 SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -72,7 +72,7 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * Mix.ar(filts))
 	);
-}).send(s);
+}).add;
 
 // synthObj //
 ~scverb=~busControlledSynth.reproduce;

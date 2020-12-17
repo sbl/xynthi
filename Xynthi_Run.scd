@@ -36,7 +36,7 @@ Routine({
 		input=In.ar(in, 2);
 		env=EnvGen.ar(Env.new([1.0, 0.0, 1.0], [0.02, 0.02], releaseNode:1), gate, doneAction:2);
 		ReplaceOut.ar(in, env * input);
-	}).send(s);
+	}).add;
 
 	// wait for the defs to load
 	s.sync;

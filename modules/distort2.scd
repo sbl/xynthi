@@ -6,23 +6,23 @@
 // synthDef //
 SynthDef(\bp_1, {|in=21, out=0|
 		Out.ar(out, In.ar(in));
-}).send(s);
+}).add;
 
 SynthDef(\clip2, {|out=0, in=38, mod_in=39, depth=1|
 	Out.ar(out, In.ar(in).clip2(In.ar(mod_in) * depth))
-}).send(s);
+}).add;
 
 SynthDef(\wrap2, {|out=0, in=38, mod_in=39, depth=1|
 	Out.ar(out, In.ar(in).wrap2(In.ar(mod_in) * depth))
-}).send(s);
+}).add;
 
 SynthDef(\fold2, {|out=0, in=38, mod_in=39, depth=1|
 	Out.ar(out, In.ar(in).fold2(In.ar(mod_in) * depth))
-}).send(s);
+}).add;
 
 SynthDef(\excess, {|out=0, in=38, mod_in=39, depth=1|
 	Out.ar(out, In.ar(in).excess(In.ar(mod_in) * depth))
-}).send(s);
+}).add;
 
 // synthObj //
 ~distort2=~busControlledSynth.reproduce;

@@ -6,7 +6,7 @@
 // synthDef //
 SynthDef(\bp_2, {|in=21, out=0|
 		Out.ar(out, In.ar(in, 2));
-}).send(s);
+}).add;
 
 SynthDef(\td_22, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0.667, w_depth=0.00027, rotate=0.0, mix=0.2, i_max_del=8|
 	var sig, mod, del, fbs, fb;
@@ -19,7 +19,7 @@ SynthDef(\td_22, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	del=LPF.ar(HPF.ar(del, hpf), lpf);
 	LocalOut.ar(del);
 	Out.ar(out, 1 - mix * sig + (mix * del));
-}, [0.02]).send(s);
+}, [0.02]).add;
 
 SynthDef(\td_12, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0.667, w_depth=0.00027, rotate=0.0, mix=0.2, i_max_del=8|
 	var sig, mod, del, fbs, fb;
@@ -32,7 +32,7 @@ SynthDef(\td_12, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	del=LPF.ar(HPF.ar(del, hpf), lpf);
 	LocalOut.ar(del);
 	Out.ar(out, 1 - mix * sig + (mix * del));
-}, [0.02]).send(s);
+}, [0.02]).add;
 
 SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0.667, w_depth=0.00027, mix=0.2, i_max_del=8|
 	var sig, mod, del, fbs, fb;
@@ -44,7 +44,7 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	del=LPF.ar(HPF.ar(del, hpf), lpf);
 	LocalOut.ar(del);
 	Out.ar(out, 1 - mix * sig + (mix * del));
-}, [0.02]).send(s);
+}, [0.02]).add;
 
 // synthObj //
 ~tdelay=~busControlledSynth.reproduce;

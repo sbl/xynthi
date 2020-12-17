@@ -6,7 +6,7 @@
 // synthDef //
 SynthDef(\bp_1, {|in=21, out=0|
 		Out.ar(out, In.ar(in));
-}).send(s);
+}).add;
 
 SynthDef(\moog_vcf_1, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, amp=1|
 		Out.ar(out, MoogLadder.ar(In.ar(in), Clip.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 60, 20000), Clip.kr(q, 0.0, 1.25), amp));
@@ -15,7 +15,7 @@ SynthDef(\moog_vcf_1, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 	}, [nil, nil, 0.02, 0.02, nil, nil, 0.02]
 
 
-).send(s);
+).add;
 
 SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, amp=1|
 		Out.ar(out, MoogLadder.ar(In.ar(in, 2), Clip.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 60, 20000), Clip.kr(q, 0.0, 1.25), amp));
@@ -24,7 +24,7 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 	}, [nil, nil, 0.02, 0.02, nil, nil, 0.02]
 
 
-).send(s);
+).add;
 
 // synthObj //
 ~moogVcf=~busControlledSynth.reproduce;

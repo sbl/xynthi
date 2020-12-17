@@ -11,7 +11,7 @@ SynthDef(\tone_out, {|out=0, in=38, tone=0.5, pan=0, amp=1|
 	input=Tone.ar(input, Clip.kr(tone, 0.01, 1.0));
 	input=Limiter.ar(input * amp, 0.99, 0.01);
 	Out.ar(out, Pan2.ar(input, pan))
-}, [nil, nil, 0.02, 0.02, 0.02]).send(s);
+}, [nil, nil, 0.02, 0.02, 0.02]).add;
 
 // synthObj //
 ~output=~busControlledSynth.reproduce;
