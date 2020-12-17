@@ -336,7 +336,7 @@ Routine({
 					});
 				});
 		});
-		prename=SCStaticText(~synthWin, 80@18).string_("Default");
+		prename=StaticText(~synthWin, 80@18).string_("Default");
 		Button(~synthWin, 70@18)
 			.states_([["Batch"]])
 			.action_({
@@ -486,7 +486,7 @@ Routine({
 					});
 				});
 			});
-		SCStaticText(~synthWin, 80@18).string_("Bend Range: ").align_(\right);
+		StaticText(~synthWin, 80@18).string_("Bend Range: ").align_(\right);
 		SNBox(~synthWin, 20@18)
 			.clipLo_(0)
 			.clipHi_(48)
@@ -494,7 +494,7 @@ Routine({
 			.action_({|v|
 				bendRange=v.value;
 			});
-		SCStaticText(~synthWin, 40@18).string_("Lag: ").align_(\right);
+		StaticText(~synthWin, 40@18).string_("Lag: ").align_(\right);
 		SNBox(~synthWin, 40@18)
 			.clipLo_(0.01)
 			.clipHi_(4)
