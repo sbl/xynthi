@@ -28,8 +28,8 @@ Routine({
 	var msg, tmpmsg, unpackMsg, tmparr, audioMods, groups, revInBus, revOutBus, delInBus, mix1OutBus, mix2OutBus, matrix, freqInstr, vco1, vco2, vco3, in1, in2, noise1, env1, env2, ringer, dist, moogVcf, mixer1, mixer2, del, scverb, lfo1, lfo2, lfo3, modpod, index, prename, theMods, quickPre, revSr, muteSynth, noteOn, noteOff, noteOnFunc, noteOffFunc, bend, bendRange=2, heldNotes, keyMode=0;
 
 	"Loading Modules".postln;
-	"SynthEvents.rtf".loadPaths;
-	"modules/*.rtf".loadPaths;
+  "SynthEvents.rtf".loadRelative();
+  "modules/*.rtf".loadRelative();
 
 	SynthDef(\soft_mute_2, {|in=0, gate=1|
 		var env, input;
@@ -294,7 +294,7 @@ Routine({
 	{
 		~synthWin=MultiPageLayout("Xynthi");
 		ActionButton(~synthWin, " Save ", {
-			CocoaDialog.savePanel({|path|
+			Dialog.savePanel({|path|
 				var state;
 				state=Dictionary.new;
 				~xynthi.modDict.keysValuesDo({|key, value|
@@ -304,7 +304,7 @@ Routine({
 			});
 		});
 		ActionButton(~synthWin, " Load ", {
-			CocoaDialog.getPaths({|path|
+			Dialog.getPaths({|path|
 				var state, name;
 				state=Object.readTextArchive(path[0]);
 				state.keysValuesDo({|key, value|
@@ -349,7 +349,7 @@ Routine({
 						{ 1 } { pres=~xynthi.matrix.quickPre; size=8 }
 						{ 2 } { pres=~xynthi.modpod.quickPre; size=23 };
 						win.close;
-						CocoaDialog.getPaths({|paths|
+						Dialog.getPaths({|paths|
 							paths=paths.copyRange(0, size);
 							paths.do({|e, c|
 								pres.put(c, Object.readTextArchive(e));
