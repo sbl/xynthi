@@ -36,7 +36,8 @@ s.waitForBoot {
 		input = In.ar(in, 2);
 		env = EnvGen.ar(Env.new([1.0, 0.0, 1.0], [0.02, 0.02], releaseNode:1), gate, doneAction:2);
 		ReplaceOut.ar(in, env * input);
-	}).add;
+	}).send(s);
+
 
 	// wait for the defs to load
 	s.sync;
@@ -479,10 +480,9 @@ s.waitForBoot {
 		~xynthi.rev.theGui.displayGui(~rightWin);
 		~synthWin.startRow;
 
-    /*
+
 		~xynthi.env1.theGui.displayGui(~synthWin);
-
-
+    /*
 		~xynthi.env2.theGui.displayGui(~synthWin);
 		~xynthi.lfo1.theGui.displayGui(~synthWin);
 		~xynthi.lfo2.theGui.displayGui(~synthWin);
@@ -594,6 +594,6 @@ s.waitForBoot {
     // FIXME(sbl): revert after debug
     // ~synthWin.window.userCanClose_(false);
 
-	}.defer
+	}.defer;
 };
 )
