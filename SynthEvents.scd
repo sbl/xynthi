@@ -239,7 +239,7 @@
 	showIO: false,
 	linkIncDec: true,
 	elementStyle: (
-		knobSize: 32@85,
+		knobSize: 40@85,
 		textWidth: 40,
 		textHeight: 16,
 		buttonSize: 40 @ 16,

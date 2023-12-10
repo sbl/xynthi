@@ -429,7 +429,7 @@ s.waitForBoot {
 			});
 
 
-
+    // vcos
 		~synthWin.startRow;
 		~leftWin = FlowView(~synthWin, 245@470);
     ~xynthi.vco1.theGui.displayGui(~leftWin);
@@ -441,17 +441,20 @@ s.waitForBoot {
     ~xynthi.vco3.theGui.displayGui(~leftWin);
     ~leftWin.startRow;
 
+   // IO
     ~xynthi.in1.theGui.displayGui(~leftWin);
-    // ~xynthi.in2.theGui.valueDictionary.put(\in, 2);
-    // ~xynthi.in2.theGui.displayGui(~leftWin);
+    ~xynthi.in2.theGui.valueDictionary.put(\in, 2);
+    ~xynthi.in2.theGui.displayGui(~leftWin);
 
-    /*
-
+    // noise, ring, dist
 		~midWin = FlowView(~synthWin, 280@470);
 		~xynthi.noise1.theGui.displayGui(~midWin);
-		~xynthi.ringer.theGui.displayGui(~midWin);
-		~xynthi.dist.theGui.displayGui(~midWin);
-		~midWin.startRow;
+    ~xynthi.ringer.theGui.displayGui(~midWin);
+    ~xynthi.dist.theGui.displayGui(~midWin);
+
+    ~midWin.startRow;
+
+    /*
 		~xynthi.matrix.makeMatrix(~midWin);
 		~rightWin = FlowView(~synthWin, 340@470);
 		~xynthi.vcf.theGui.displayGui(~rightWin);
