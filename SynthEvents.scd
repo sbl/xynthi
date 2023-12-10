@@ -1,5 +1,3 @@
-
-
 (
 ~makeSynthDef = (
 	reproduce: {|self|
@@ -46,6 +44,7 @@
 	busDictionary: nil,
 	makeBusDictionary: nil,
 	makeNodeMap: {|self|
+    // NOTE(sbl): was NodeMap - interface seems to have changed - no map method
 		(self.nodeMap.isNil).if({ self.nodeMap=ProxyNodeMap.new });
 		(self.busDictionary.isNil).if({ self.makeBusDictionary });
 		self.busDictionary.keysValuesDo({|key, value|
@@ -240,43 +239,48 @@
 	showIO: false,
 	linkIncDec: true,
 	elementStyle: (
-		knobSize: 50 @ 18,
-		knobLabel: 40,
-		knobNumber: 40,
+		knobSize: 32@85,
 		textWidth: 40,
 		textHeight: 16,
-		buttonSize: 40 @ 18,
-		smallButtonSize: 18 @ 18,
+		buttonSize: 40 @ 16,
+		smallButtonSize: 16 @ 16,
 		sliderSize: 200 @ 18,
 		sliderLabel: 40,
 		sliderNumber: 40,
-		boxSize: 40 @ 18,
-		smallBoxSize: 20 @ 18,
-		popupSize: 70@18,
+		boxSize: 40 @ 16,
+		smallBoxSize: 18 @ 16,
+		popupSize: 68@18,
 		bgcolor: Color.white
 	),
 	makeGui: nil,
+
 	displayGui: {|self, parent, title=\Synth|
-		var w, v, newwin;
-		(parent.isNil).if({
-			w=PageLayout.new(title, nil, 10@0, false);
-			newwin=true;
-			w.view.background_(self.elementStyle.bgcolor);
-		}, {
-			w=parent;
-			newwin=false;
-		});
-		w.flow({|v|
-			self.makeGui(v);
-		});
-		self.setValues;
-		(newwin).if({
-			w.resizeToFit;
-			w.front;
-		});
-		self.hasGui=true;
-		w.onClose_({ self.valueDictionary=self.getValues; self.hasGui=false });
+    var w, v, newwin;
+
+    if(parent.isNil) {
+      w = MultiPageLayout.new(title, nil, 10@0, false);
+      newwin=true;
+      w.view.background_(self.elementStyle.bgcolor);
+      } {
+        w = parent;
+        newwin = false;
+    };
+
+    w.flow({|v|
+      self.makeGui(v);
+    });
+
+
+    self.setValues;
+    if (newwin) {
+      w.resizeToFit;
+      w.front;
+    };
+
+    self.hasGui=true;
+    w.onClose_({ self.valueDictionary=self.getValues; self.hasGui=false });
 	},
+
 	setValues: {|self, dict|
 		dict=dict ? self.valueDictionary;
 		(dict.notNil).if({
@@ -302,7 +306,7 @@
 		var outputDictionary;
 		outputDictionary=Dictionary.new;
 		self.elementDictionary.keysValuesDo({|key, value|
-			// some special cases.  could be expanded
+			// some special cases.    could be expanded
 			((value.isKindOf(RangeSlider)) || (value.isKindOf(Slider2D)) ||
 				(value.isKindOf(Function))).if({
 				switch (value.class)
@@ -311,7 +315,7 @@
 						Dictionary[\activeLo_ -> value.lo, \activeHi_ -> value.hi]
 					);
 				}
-        { Slider2D } {
+				{ Slider2D } {
 					outputDictionary.add(key ->
 						Dictionary[\activex_ -> value.x, \activey_ -> value.y]
 					);
@@ -322,7 +326,7 @@
 					);
 				};
 			}, {
-				(value.isKindOf(SCEnvEditor)).if({
+				(value.isKindOf(EnvEditor)).if({
 					outputDictionary.add(key -> value.env.deepCopy);
 				}, {
 					outputDictionary.add(key -> value.value);
@@ -331,6 +335,7 @@
 		});
 		outputDictionary;
 	},
+
 	updateMIDI: {|self ...args|
 		(self.midiObj.notNil).if({
 			args=args.asArray;
