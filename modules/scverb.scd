@@ -1,12 +1,10 @@
-
-
 (
 // build synthDef, synthObj, gui, midiCtrls
 
 // synthDef //
 SynthDef(\bp_2, {|in=21, out=0|
 		Out.ar(out, In.ar(in, 2));
-}).add;
+}).send(s);
 
 SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -16,7 +14,7 @@ SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 		[0.056104166666667, 0.062729166666667, 0.073145833333333, 0.080770833333333, 0.088604166666667, 0.093604166666667, 0.048604166666667, 0.043729166666667],
 		[0.056052083333333, 0.062802083333333, 0.072927083333333, 0.080635416666667, 0.088552083333333, 0.093739583333333, 0.048572916666667, 0.043760416666667]
 	]);
-	fb=0.089.calcFeedback(time);
+	fb=exp(log(0.001) * 0.089/time);
 	mods=LFNoise2.kr([3.1, 3.5, 1.110, 3.973, 2.341, 1.897, 0.891, 3.221],
 		[0.0010, 0.0011, 0.0017, 0.0006, 0.0010, 0.0011, 0.0017, 0.0006]
 	);
@@ -28,7 +26,7 @@ SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * [Mix.ar([filts[0], filts[2], filts[4], filts[6]]), Mix.ar([filts[1], filts[3], filts[5], filts[7]])])
 	);
-}).add;
+}).send(s);
 
 SynthDef(\scverb_12, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -50,7 +48,7 @@ SynthDef(\scverb_12, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * [Mix.ar([filts[0], filts[2], filts[4], filts[6]]), Mix.ar([filts[1], filts[3], filts[5], filts[7]])])
 	);
-}).add;
+}).send(s);
 
 SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -72,7 +70,7 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * Mix.ar(filts))
 	);
-}).add;
+}).send(s);
 
 // synthObj //
 ~scverb=~busControlledSynth.reproduce;
@@ -142,20 +140,20 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	w.vert({|v|
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", {
+			ToggleButton(v, " P ", { 
 				self.synthObj.playSynth;
-			}, {
+			}, { 
 				self.synthObj.stopSynth;
 			}).view,
 			\mute ->
 			ToggleButton(v, " B ", {
-				self.synthObj.runSynth(false);
-				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_2,
+				self.synthObj.runSynth(false); 
+				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_2, 
 					[\in, self.synthObj.synthArgDictionary.at(\in),
 						\out, self.synthObj.synthArgDictionary.at(\out)
 					]
 				);
-			}, {
+			}, { 
 				self.synthObj.runSynth(true);
 				(self.bpObj.notNil).if({ self.bpObj.free });
 			}).view
@@ -179,16 +177,16 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});
-	}, 20@100);
+		});	
+	}, 20@82);
 };
 ~scverbGui.valueDictionary=Dictionary[
-	\mix -> 0.2,
-	\time -> 5,
+	\mix -> 0.2, 
+	\time -> 5, 
 	\lpf -> 8200,
 	\in -> 22,
-	\out -> 0,
-	\mute -> 0,
+	\out -> 0, 
+	\mute -> 0, 
 	\play -> 1
 ];
 
@@ -201,23 +199,23 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\mix), 0.0078, \amp,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\mix, v);
-				self.updateGui(\mix, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\mix), 0.0078, \amp, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\mix, v); 
+				self.updateGui(\mix, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\mix),
-		self.ccDictionary.at(\time), 0.0078, [0, 60, 4],
-			{|s, c, n, v|
-				self.synthObj.setArgs(\time, v);
-				self.updateGui(\time, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\time), 0.0078, [0, 60, 4], 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\time, v); 
+				self.updateGui(\time, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\time),
-		self.ccDictionary.at(\lpf), 0.0078, \ffreq,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\lpf, v);
-				self.updateGui(\lpf, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\lpf), 0.0078, \ffreq, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\lpf, v); 
+				self.updateGui(\lpf, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\lpf)
 	);
 	self.responderObj;

@@ -2,19 +2,17 @@
 
 dev notes to make this run
 
+## Extensions
 
-classes:
+- Copy or link Extensions into SuperCollider runtime directory
 
-- bhohclasses added to path
+## quarks:
 
+```supercollider
+Quarks.install("cruciallib");
+Quarks.install("ixiViews");
+```
 
-quarks:
-
-- cruciallib
-- ixiViews
-
-
-plugins:
-
+## plugins:
 
 - [SC3Plugins](https://supercollider.github.io/sc3-plugins/)

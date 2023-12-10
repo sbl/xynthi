@@ -1,5 +1,3 @@
-
-
 (
 // build synthDef, synthObj, gui, midiCtrls
 
@@ -10,14 +8,14 @@ SynthDef(\ac_env, {|in=10, out=0, ctrl_out=32, timescale=1, mul=2, add= -1, gate
 	envelope=EnvGen.kr(env, gate, timeScale:timescale);
 	Out.kr(ctrl_out, envelope * mul + add);
 	Out.ar(out, In.ar(in) * envelope);
-}).add;
+}).send(s);
 
 SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 	var env, envelope;
 	env=Control.names([\env]).kr(Env.newClear(9).asArray);
 	envelope=EnvGen.kr(env, gate, timeScale:timescale);
 	Out.kr(ctrl_out, envelope * mul + add);
-}).add;
+}).send(s);
 
 // synthObj //
 ~envSynth=~busControlledSynth.reproduce;
@@ -41,7 +39,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 ~envGui.synthObj=~envSynth;
 ~envGui.resetenv={|self|
 	self.elementDictionary.at(\env).refresh(self.synthObj.env);
-};
+}; 
 ~envGui.makeGui={|self, w|
 	self.elementDictionary=Dictionary[
 		\mode ->
@@ -49,7 +47,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 			self.synthObj.env.loopNode=self.elementDictionary.at(\loop).value;
 			self.synthObj.setArgArray(\env, self.synthObj.env.asArray);
 			self.synthObj.busarr.getn(2, {|v|
-				(v[1]==1).if({
+				(v[1]==1).if({ 
 					self.synthObj.setArgs(\gate, 0);
 					{ self.synthObj.setArgs(\gate, 1) }.defer(0.1);
 				});
@@ -82,7 +80,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 			}),
 		\gate ->
 		ToggleButton(w, " Gate ", { self.synthObj.setArgs(\gate, 1) },
-			{ self.synthObj.setArgs(\gate, 0) }).view
+			{ self.synthObj.setArgs(\gate, 0) }).view	
 	];
 	ActionButton(w, " - ", {
 		var levels, times, curves, releaseNode;
@@ -113,7 +111,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 		curves=self.synthObj.env.curves.asArray;
 		releaseNode=self.synthObj.env.releaseNode;
 		(releaseNode.notNil).if({ releaseNode=releaseNode + 1 });
-		self.synthObj.env=Env(levels ++ 0,
+		self.synthObj.env=Env(levels ++ 0, 
 			(times ++ times.at(times.size-1)).normalizeSum,
 			curves ++ curves.at(curves.size-1),
 			releaseNode,
@@ -128,7 +126,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 	w.startRow;
 	self.elementDictionary.put(
 		\env,
-		SCEnvEditor(w, 263@96, self.synthObj.env, 10)
+		EnvEditor(w, 255@84, self.synthObj.env, 10)
 			.onMouseUp({|env|
 				(env != self.synthObj.env).if({
 					self.synthObj.stopSynth;
@@ -202,7 +200,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 						try { self.elementDictionary.at(key).perform(vkey, vval) };
 					});
 				}, {
-					((self.elementDictionary.at(key).isKindOf(EZSlider)) ||
+					((self.elementDictionary.at(key).isKindOf(EZSlider)) || 
 						(self.elementDictionary.at(key).isKindOf(EZKnob))).if({
 						try { self.elementDictionary.at(key).value_(value) };
 					}, {
@@ -217,10 +215,10 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 	});
 };
 ~envGui.valueDictionary=Dictionary[
-	\mode -> 1,
+	\mode -> 1, 
 	\in -> 32,
 	\out -> 0,
-	\loop -> 0,
+	\loop -> 0, 
 	\play -> 1,
 	\mute -> 0,
 	\release -> 3,
@@ -242,11 +240,11 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\timescale), 0.0078, [0.1, 30, 6],
-			{|s, c, n, v|
-				self.synthObj.setArgs(\timescale, v);
-				self.updateGui(\timescale, v);
-			},
+		self.ccDictionary.at(\timescale), 0.0078, [0.1, 30, 6], 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\timescale, v); 
+				self.updateGui(\timescale, v); 
+			}, 
 			self.valueDictionary.at(\timescale)
 	);
 	self.responderObj;
@@ -276,7 +274,7 @@ SynthDef(\ctrl_env, {|ctrl_out=32, timescale=1, mul=2, add= -1, gate=1|
 )
 /*
 (
-~envWin=PageLayout.new(\Envs);
+~envWin=MultiPageLayout.new(\Envs);
 ~envWin.view.background_(Color.blue(0.2, 0.5));
 // ~envWin.view.background_(Color.black);
 ~envInstr.theSynth.outbus=Bus.control;

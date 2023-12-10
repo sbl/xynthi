@@ -1,32 +1,30 @@
-
-
 (
 // build synthDef, synthObj, gui, midiCtrls
 
 // synthDef //
 SynthDef(\bp_1, {|in=21, out=0|
 		Out.ar(out, In.ar(in));
-}).add;
+}).send(s);
 
 SynthDef(\ring_mul, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in) * In.ar(ring_in) * depth)
-}).add;
+}).send(s);
 
 SynthDef(\ring_ring1, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring1(In.ar(ring_in) * depth))
-}).add;
+}).send(s);
 
 SynthDef(\ring_ring2, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring2(In.ar(ring_in) * depth))
-}).add;
+}).send(s);
 
 SynthDef(\ring_ring3, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring3(In.ar(ring_in) * depth))
-}).add;
+}).send(s);
 
 SynthDef(\ring_ring4, {|out=0, in=38, ring_in=39, depth=1|
 	Out.ar(out, In.ar(in).ring4(In.ar(ring_in) * depth))
-}).add;
+}).send(s);
 
 // synthObj //
 ~ringer=~busControlledSynth.reproduce;
@@ -72,7 +70,7 @@ SynthDef(\ring_ring4, {|out=0, in=38, ring_in=39, depth=1|
 				NumberBox(v, self.elementStyle.smallBoxSize)
 					.action_({|v| self.synthObj.setArgs(\out, v.value) })
 			]);
-		}, 44@100);
+		}, 44@82);
 	});
 	self.elementDictionary.put(
 		\depth,
@@ -90,20 +88,20 @@ SynthDef(\ring_ring4, {|out=0, in=38, ring_in=39, depth=1|
 	w.vert({|v|
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", {
+			ToggleButton(v, " P ", { 
 				self.synthObj.playSynth;
-			}, {
+			}, { 
 				self.synthObj.stopSynth;
 			}).view,
 			\mute ->
 			ToggleButton(v, " B ", {
-				self.synthObj.runSynth(false);
-				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_1,
+				self.synthObj.runSynth(false); 
+				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_1, 
 					[\in, self.synthObj.synthArgDictionary.at(\in),
 						\out, self.synthObj.synthArgDictionary.at(\out)
 					]
 				);
-			}, {
+			}, { 
 				self.synthObj.runSynth(true);
 				(self.bpObj.notNil).if({ self.bpObj.free });
 			}).view
@@ -120,16 +118,16 @@ SynthDef(\ring_ring4, {|out=0, in=38, ring_in=39, depth=1|
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});
-	}, 20@100);
+		});	
+	}, 20@82);
 };
 ~ringerGui.valueDictionary=Dictionary[
 	\ringtype -> 0,
-	\in-> 38,
-	\ring_in -> 39,
+	\in-> 38, 
+	\ring_in -> 39, 
 	\out -> 0,
 	\depth -> 1,
-	\mute -> 0,
+	\mute -> 0, 
 	\play -> 1
 ];
 
@@ -142,11 +140,11 @@ SynthDef(\ring_ring4, {|out=0, in=38, ring_in=39, depth=1|
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\depth), 0.0078, \amp,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\depth, v);
-				self.updateGui(\depth, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\depth), 0.0078, \amp, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\depth, v); 
+				self.updateGui(\depth, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\depth)
 	);
 	self.responderObj;

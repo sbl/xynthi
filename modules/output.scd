@@ -1,5 +1,3 @@
-
-
 (
 // build synthDef, synthObj, gui, midiCtrls
 
@@ -8,10 +6,10 @@
 SynthDef(\tone_out, {|out=0, in=38, tone=0.5, pan=0, amp=1|
 	var input;
 	input=In.ar(in);
-	input=Tone.ar(input, Clip.kr(tone, 0.01, 1.0));
-	input=Limiter.ar(input * amp, 0.99, 0.01);
+	input=Tone.ar(input * amp, Clip.kr(tone, 0.01, 1.0));
+	// input=Limiter.ar(input * amp, 0.99, 0.01);
 	Out.ar(out, Pan2.ar(input, pan))
-}, [nil, nil, 0.02, 0.02, 0.02]).add;
+}, [nil, nil, 0.02, 0.02, 0.02]).send(s);
 
 // synthObj //
 ~output=~busControlledSynth.reproduce;
@@ -84,15 +82,15 @@ SynthDef(\tone_out, {|out=0, in=38, tone=0.5, pan=0, amp=1|
 	w.vert({|v|
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", {
+			ToggleButton(v, " P ", { 
 				self.synthObj.playSynth;
-			}, {
+			}, { 
 				self.synthObj.stopSynth;
 			}).view,
 			\mute ->
 			ToggleButton(v, " M ", {
-				self.synthObj.runSynth(false);
-			}, {
+				self.synthObj.runSynth(false); 
+			}, { 
 				self.synthObj.runSynth(true);
 			}).view
 		]);
@@ -108,16 +106,16 @@ SynthDef(\tone_out, {|out=0, in=38, tone=0.5, pan=0, amp=1|
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});
-	}, 20@100);
+		});	
+	}, 20@82);
 };
 ~outputGui.valueDictionary=Dictionary[
-	\in-> 38,
-	\tone -> 0.5,
+	\in-> 38, 
+	\tone -> 0.5, 
 	\pan -> 0.0,
 	\out -> 0,
 	\amp -> 1,
-	\mute -> 0,
+	\mute -> 0, 
 	\play -> 1
 ];
 
@@ -130,23 +128,23 @@ SynthDef(\tone_out, {|out=0, in=38, tone=0.5, pan=0, amp=1|
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\tone), 0.0078, \unipolar,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\tone, v);
-				self.updateGui(\tone, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\tone), 0.0078, \unipolar, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\tone, v); 
+				self.updateGui(\tone, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\tone),
-		self.ccDictionary.at(\pan), 0.0078, \pan,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\pan, v);
-				self.updateGui(\pan, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\pan), 0.0078, \pan, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\pan, v); 
+				self.updateGui(\pan, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\pan),
-		self.ccDictionary.at(\amp), 0.0078, [0, 2, 1],
-			{|s, c, n, v|
-				self.synthObj.setArgs(\amp, v);
-				self.updateGui(\amp, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\amp), 0.0078, [0, 2, 1], 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\amp, v); 
+				self.updateGui(\amp, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\amp)
 	);
 	self.responderObj;

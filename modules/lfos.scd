@@ -1,64 +1,62 @@
-
-
 (
 // build synthDef, synthObj, gui, midiCtrls
 
 // synthDef //
 SynthDef(\lfo_sine, {
-		|out=0, freq=1, i_phase=0, amp=1|
-		Out.kr(out,
+		|out=0, freq=1, i_phase=0, amp=1| 
+		Out.kr(out,    
 			LFCub.kr(freq, i_phase, amp)
 		)
 	}
-).add;
+).send(s);
 
 SynthDef(\lfo_saw, {
-		|out=0, freq=1, i_phase=0, amp=1|
-		Out.kr(out,
+		|out=0, freq=1, i_phase=0, amp=1| 
+		Out.kr(out,    
 			LFSaw.kr(freq, i_phase, amp)
 		)
 	}
-).add;
+).send(s);
 
 SynthDef(\lfo_pulse, {
-		|out=0, freq=1, i_phase=0, pw=0.5, amp=1, add=0|
-		Out.kr(out,
+		|out=0, freq=1, i_phase=0, pw=0.5, amp=1, add=0| 
+		Out.kr(out,    
 			LFPulse.kr(freq, i_phase, pw, amp, add)
 		)
 	}
-).add;
+).send(s);
 
 SynthDef(\lfo_sh, {
-		|out=0, freq=1, amp=1|
-		Out.kr(out,
+		|out=0, freq=1, amp=1| 
+		Out.kr(out,    
 			LFDNoise0.kr(freq, amp)
 		)
 	}
-).add;
+).send(s);
 
 SynthDef(\lfo_jitter, {
-		|out=0, freq=1, amp=1|
+		|out=0, freq=1, amp=1| 
 		var dust;
 		dust=Dust2.kr(freq, 0.0334);
-		Out.kr(out,
+		Out.kr(out,    
 			LFDNoise3.kr(freq.ring1(Latch.kr(dust, dust.abs)), amp)
 		)
 	}
-).add;
+).send(s);
 
 SynthDef(\lfo_dust, {
 	|out=0, freq=1, amp=1|
 	var dust;
 	dust=Dust2.kr(freq, amp);
 	Out.kr(out, Latch.kr(dust, dust.abs))
-}).add;
+}).send(s);
 
 SynthDef(\lfo_bdust, {
 	|out=0, freq=1, amp=1|
 	var dust;
 	dust=Dust2.kr(freq);
 	Out.kr(out, TBrownRand.kr(amp.neg, amp, 1.0, 1, dust.abs))
-}).add;
+}).send(s);
 
 // synthObj //
 ~lfoSynth=~busControlledSynth.reproduce;
@@ -134,8 +132,8 @@ SynthDef(\lfo_bdust, {
 };
 ~lfoGui.valueDictionary=Dictionary[
 	\synth -> 0,
-	\freq -> 1,
-	\mute -> 0,
+	\freq -> 1, 
+	\mute -> 0, 
 	\play -> 1
 ];
 
@@ -148,16 +146,16 @@ SynthDef(\lfo_bdust, {
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\freq), 0.0078, [0.033, 60, \exp],
-			{|s, c, n, v|
-				self.synthObj.setArgs(\freq, v);
-				self.updateGui(\freq, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\freq), 0.0078, [0.033, 60, \exp], 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\freq, v); 
+				self.updateGui(\freq, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\freq),
-		self.ccDictionary.at(\pw), 0.0078, \unipolar,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\pw, v);
-			},
+		self.ccDictionary.at(\pw), 0.0078, \unipolar, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\pw, v); 
+			}, 
 			self.valueDictionary.at(\pw)
 	);
 	self.responderObj;
@@ -187,7 +185,7 @@ SynthDef(\lfo_bdust, {
 )
 /*
 (
-~lfoWin=PageLayout.new(\LFOs);
+~lfoWin=MultiPageLayout.new(\LFOs);
 // ~lfoWin.view.background_(Color.black);
 ~lfoInstr.theSynth.outbus=Bus.control;
 ~lfoInstr.theSynth.playSynth([\out, ~lfoInstr.theSynth.outbus.index]);
@@ -209,7 +207,6 @@ SynthDef(\lfo_bdust, {
 ~lfoWin.resizeToFit;
 ~lfoWin.front;
 )
-
 ~env1=Env_Module.new;
 ~env2=Env_Module.new;
 ~env1.gui;
@@ -218,10 +215,10 @@ SynthDef(\lfo_bdust, {
 ~env2.gate(1)
 (
 ~mod1=ModPod(4, [
-	["sfreq", \sfreq, ~stirkInstr.theSynth, ~stirkInstr.theSynth.busDictionary.at(\sfreq), \ring],
+	["sfreq", \sfreq, ~stirkInstr.theSynth, ~stirkInstr.theSynth.busDictionary.at(\sfreq), \ring], 
 	["pfreq", \pfreq, ~stirkInstr.theSynth, ~stirkInstr.theSynth.busDictionary.at(\pfreq), \ring]
 	], [
-	["LFO1", ~lfoInstr.theSynth.outbus.index],
+	["LFO1", ~lfoInstr.theSynth.outbus.index], 
 	["LFO2", ~lfo2.theSynth.outbus.index],
 	["LFO3", ~lfo3.theSynth.outbus.index],
 	["ENV1", ~env1.outbus.index],

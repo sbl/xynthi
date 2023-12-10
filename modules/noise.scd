@@ -1,5 +1,3 @@
-
-
 (
 
 // build synthDef, synthObj, gui, midiCtrls
@@ -8,23 +6,23 @@
 
 SynthDef(\noise_white, {|out=0, amp=1|
 	Out.ar(out, WhiteNoise.ar(amp))
-}).add;
+}).send(s);
 
 SynthDef(\noise_pink, {|out=0, amp=1|
 	Out.ar(out, PinkNoise.ar(amp))
-}).add;
+}).send(s);
 
 SynthDef(\noise_brown, {|out=0, amp=1|
 	Out.ar(out, BrownNoise.ar(amp))
-}).add;
+}).send(s);
 
 SynthDef(\noise_gray, {|out=0, amp=1|
 	Out.ar(out, GrayNoise.ar(amp))
-}).add;
+}).send(s);
 
 SynthDef(\noise_clip, {|out=0, amp=1|
 	Out.ar(out, WhiteNoise.ar(amp))
-}).add;
+}).send(s);
 
 // synthObj //
 ~noise=~busControlledSynth.reproduce;
@@ -73,15 +71,15 @@ SynthDef(\noise_clip, {|out=0, amp=1|
 	w.vert({|v|
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", {
+			ToggleButton(v, " P ", { 
 				self.synthObj.playSynth;
-			}, {
+			}, { 
 				self.synthObj.stopSynth;
 			}).view,
 			\mute ->
 			ToggleButton(v, " M ", {
-				self.synthObj.runSynth(false);
-			}, {
+				self.synthObj.runSynth(false); 
+			}, { 
 				self.synthObj.runSynth(true);
 			}).view
 		]);
@@ -103,14 +101,14 @@ SynthDef(\noise_clip, {|out=0, amp=1|
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});
-	}, 20@100);
+		});	
+	}, 20@82);
 };
 ~noiseGui.valueDictionary=Dictionary[
 	\noisetype -> 0,
 	\out -> 0,
 	\amp -> 0.1,
-	\mute -> 1,
+	\mute -> 1, 
 	\play -> 1
 ];
 
@@ -123,11 +121,11 @@ SynthDef(\noise_clip, {|out=0, amp=1|
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\amp), 0.0078, \amp,
-			{|s, c, n, v|
-				self.synthObj.setArgs(\amp, v);
-				self.updateGui(\amp, v, \valueNoAction_);
-			},
+		self.ccDictionary.at(\amp), 0.0078, \amp, 
+			{|s, c, n, v| 
+				self.synthObj.setArgs(\amp, v); 
+				self.updateGui(\amp, v, \valueNoAction_); 
+			}, 
 			self.valueDictionary.at(\amp)
 	);
 	self.responderObj;

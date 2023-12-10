@@ -1,13 +1,11 @@
-
-
 (
 SynthDef(\matrix_router, {|i_in=32, i_out=0|
 	Out.ar(i_out, In.ar(i_in));
-}).add;
+}).send(s);
 
 SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 	Out.ar(i_out, InFeedback.ar(i_in));
-}).add;
+}).send(s);
 
 ~audioMatrix = (
 	reproduce: {|self|
@@ -32,7 +30,7 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 		w.vert({|v|
 			StaticText(v, 40@65).string_("");
 			self.outputArr.do({|e, c|
-				StaticText(v, 40@14).string_(self.outputNames.at(c)).align_(\right);
+				StaticText(v, 40@12).string_(self.outputNames.at(c)).align_(\right);
 			});
 		}, 40@(18 * outSize));
 		w.vert({|v|
@@ -50,7 +48,7 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 					StaticText(x, 10@60).string_(vertName).align_(\center);
 				});
 			}, (14 * inSize + 5)@60);
-			boxView=CompositeView(v, (inSize * 14)@(outSize  * 18));
+			boxView=CompositeView(v, (inSize * 14)@(outSize    * 16));
 			boxAct={|l|
 				var v, x, y;
 				x=l[0];
@@ -73,8 +71,8 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 					});
 				});
 			};
-			self.boxGrid=BoxGrid.new(boxView,
-				Rect(boxView.bounds.left, boxView.bounds.top, inSize * 14, outSize * 18),
+			self.boxGrid=BoxGrid.new(boxView, 
+				Rect(boxView.bounds.left, boxView.bounds.top, inSize * 14, outSize * 16), 
 				columns: inSize, rows: outSize)
 				.setBackground_(Color.white)
 				.setNodeBorder_(3)
@@ -82,7 +80,7 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 				.setTrailDrag_(true)
 				.nodeDownAction_(boxAct)
 				.nodeTrackAction_(boxAct);
-		}, (14 * inSize + 5)@(18 * outSize + 65));
+		}, (14 * inSize + 5)@(16 * outSize + 65));
 		w.startRow;
 		ActionButton(w, " S ", {
 			Dialog.savePanel({|path|
@@ -95,7 +93,7 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 			Dialog.getPaths({|path|
 				self.setValues(Object.readTextArchive(path[0]));
 			})
-		});
+		});	
 		self.numQuicks.do({|i|
 			Button(w, 18@16)
 				.states_([[(i + 1).asString]])
