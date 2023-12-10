@@ -9,10 +9,10 @@ SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 	amplitude=Amplitude.kr(input);
 	amp=amp * Lag.kr(amplitude > gate, 0.02);
 	Out.ar(out, input * amp)
-}).send(s);
+}).add;
 
 // synthObj //
-~audioIn=~busControlledSynth.reproduce;
+~audioIn = ~busControlledSynth.reproduce;
 ~audioIn.synthDefName=\audio_in;
 ~audioIn.fastPlay=false;
 ~audioIn.defaultSettings=[0.001, 1];
@@ -24,17 +24,19 @@ SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 		\amp -> (bus.index + 1)
 	];
 	bus.setn(self.defaultSettings);
-	self.busarr=bus;
+	self.busarr = bus;
 };
+
 // gui //
-~audioInGui=~buildGui.reproduce;
-~audioInGui.synthObj=~audioIn;
-~audioInGui.makeGui={|self, w|
+~audioInGui = ~buildGui.reproduce;
+~audioInGui.synthObj = ~audioIn;
+~audioInGui.makeGui = {|self, w|
 	self.elementDictionary=Dictionary[
 		\in ->
 		NumberBox(w, self.elementStyle.smallBoxSize)
 			.action_({|v| self.synthObj.setArgs(\in, v.value) })
 	];
+
 	(self.showIO).if({
 		self.elementDictionary.put(
 			\out,
@@ -42,6 +44,7 @@ SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 				.action_({|v| self.synthObj.setArgs(\out, v.value) })
 		);
 	});
+
 	w.startRow;
 	self.elementDictionary.putAll(Dictionary[
 		\gate ->
@@ -50,10 +53,7 @@ SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 				self.synthObj.setArgs(\gate, v.value);
 				self.updateMIDI(\gate, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\amp ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'amp', \amp,
@@ -61,10 +61,7 @@ SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 				self.synthObj.setArgs(\amp, v.value);
 				self.updateMIDI(\amp, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		)
 	]);
 	w.vert({|v|
@@ -97,6 +94,7 @@ SynthDef(\audio_in, {|out=0, in=1, gate=0.001, amp=1|
 		});
 	}, 20@100);
 };
+
 ~audioInGui.valueDictionary=Dictionary[
 	\in-> 1,
 	\out -> 0,
