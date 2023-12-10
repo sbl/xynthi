@@ -6,29 +6,29 @@
 SynthDef(\master_freq, {|out=0, freq_in=440, tune=1, lag=0.02|
   Out.kr(out, Lag.kr(freq_in * tune, lag));
 }
-).send(s);
+).add;
 
 // sine
 SynthDef(\vco_sine, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
   Out.ar(out, SinOsc.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 0, amp));
 }, [nil, 0.02, 0.02, nil, nil, 0.02]
-).send(s);
+).add;
 
 // varsaw
 SynthDef(\vco_saw, {|out=0, freq=440, tune=1, fm_in=37, fm=0, pw=0.5, amp=1|
   Out.ar(out, VarSaw.ar(Clip.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 0.1, 20000), 0, pw, amp));
 }, [nil, 0.02, 0.02, nil, nil, 0.02, 0.02]
-).send(s);
+).add;
 
 SynthDef(\vco_pulse, {|out=0, freq=440, tune=1, fm_in=37, fm=0, pw=0.5, amp=1|
   Out.ar(out, Pulse.ar(Clip.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 0.1, 20000), pw, amp));
 }, [nil, 0.02, 0.02, nil, nil, 0.02, 0.02]
-).send(s);
+).add;
 
 SynthDef(\vco_pulself, {|out=0, freq=440, tune=1, fm_in=37, fm=0, pw=0.5, amp=1|
   Out.ar(out, LFPulse.ar(Clip.ar(K2A.ar(freq * tune).ring1(A2K.kr(In.ar(fm_in)) * fm), 0.1, 20000), 0.0, pw, amp));
 }, [nil, 0.02, 0.02, nil, nil, 0.02, 0.02]
-).send(s);
+).add;
 
 // sync saw
 SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
@@ -36,7 +36,7 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
   basefreq=Clip.ar(K2A.ar(freq).ring1(In.ar(fm_in) * fm), 0.1, 20000);
   Out.ar(out, SyncSaw.ar(basefreq, (freq * tune), amp));
 }, [nil, 0.02, 0.02, nil, nil, 0.02]
-).send(s);
+).add;
 
 // synthObj //
 ~masterFreq=~busControlledSynth.reproduce;
