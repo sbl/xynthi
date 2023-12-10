@@ -488,9 +488,11 @@ s.waitForBoot {
 		~xynthi.lfo2.theGui.displayGui(~synthWin);
 		~xynthi.lfo3.theGui.displayGui(~synthWin);
 
-    /*
+
 		~synthWin.startRow;
 		~xynthi.modpod.gui(~synthWin);
+
+    /*
 		~synthWin.startRow;
 
 		// cc's
