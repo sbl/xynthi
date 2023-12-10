@@ -4,17 +4,17 @@
 // synthDef //
 SynthDef(\bp_1, {|in=21, out=0|
 		Out.ar(out, In.ar(in));
-}).send(s);
+}).add;
 
 SynthDef(\moog_vcf_1, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, amp=1|
 		Out.ar(out, MoogLadder.ar(In.ar(in), Clip.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 60, 20000), Clip.kr(q, 0.0, 1.25), amp));
 	}, [nil, nil, 0.02, 0.02, nil, nil, 0.02]
-).send(s);
+).add;
 
 SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, amp=1|
 		Out.ar(out, MoogLadder.ar(In.ar(in, 2), Clip.ar(K2A.ar(freq * tune).ring1(In.ar(fm_in) * fm), 60, 20000), Clip.kr(q, 0.0, 1.25), amp));
 	}, [nil, nil, 0.02, 0.02, nil, nil, 0.02]
-).send(s);
+).add;
 
 // synthObj //
 ~moogVcf=~busControlledSynth.reproduce;
@@ -48,14 +48,17 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 	});
 	self.busarr=busarr;
 };
+
 // gui //
-~moogVcfGui=~buildGui.reproduce;
-~moogVcfGui.synthObj=~moogVcf;
-~moogVcfGui.makeGui={|self, w|
+~moogVcfGui = ~buildGui.reproduce;
+~moogVcfGui.synthObj = ~moogVcf;
+~moogVcfGui.makeGui = {|self, w|
 	var vert, freqRange, resSpec;
-	self.elementDictionary=Dictionary.new;
-	w.vert({|v|
-		(self.showIO).if({
+
+	self.elementDictionary = Dictionary.new;
+
+  w.vert({|v|
+		if (self.showIO) {
 			self.elementDictionary.put(\in,
 				NumberBox(v, self.elementStyle.smallBoxSize)
 					.action_({|v| self.synthObj.setArgs(\in, v.value) })
@@ -64,8 +67,10 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 				NumberBox(v, self.elementStyle.smallBoxSize)
 					.action_({|v| self.synthObj.setArgs(\fm_in, v.value) })
 			);
-		});
-		(self.syncObj.notNil).if({
+		};
+
+
+		if (self.syncObj.notNil) {
 			self.elementDictionary.put(\sync,
 				ToggleButton(v, " ^ ", {
 					var curval, newspec, newact;
@@ -120,8 +125,10 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 					self.elementDictionary.at(\freq).value_(curval);
 				}).view
 			);
-		});
-	}, 20@82);
+		};
+	}, 20@82); // end w.vert
+
+
 	(self.linkIncDec).if({
 		resSpec=[0.0078, 0.0005, -1].asSpec;
 		Slider(w, 10@80)
@@ -134,79 +141,73 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 			})
 			.thumbSize_(2);
 	});
+
+
 	self.elementDictionary.putAll(Dictionary[
 		\freq ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'freq', \ffreq,
-			{|v|
+		EZKnob.new(w, self.elementStyle.knobSize, 'freq', \freq,
+			action: {|v|
 				self.synthObj.setArgs(\freq, v.value);
 				self.updateMIDI(\freq, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
-		\q ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'q', [0, 1.25],
-			{|v|
-				self.synthObj.setArgs(\q, v.value);
-				self.updateMIDI(\q, v.value);
-			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
-		),
-		\fm ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'fm', [0, 32, 10],
-			{|v|
-				self.synthObj.setArgs(\fm, v.value);
-				self.updateMIDI(\fm, v.value);
-			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
-		),
-		\amp ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'amp', [0, 4, 2],
-			{|v|
-				self.synthObj.setArgs(\amp, v.value);
-				self.updateMIDI(\amp, v.value);
-			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
-		)
+    \q ->
+    EZKnob.new(w, self.elementStyle.knobSize, 'q', [0, 1.25],
+      action: {|v|
+        self.synthObj.setArgs(\q, v.value);
+        self.updateMIDI(\q, v.value);
+      },
+      layout: \vert2
+    ),
+    \fm ->
+    EZKnob.new(w, self.elementStyle.knobSize, 'fm', [0, 32, 10],
+      action: {|v|
+        self.synthObj.setArgs(\fm, v.value);
+        self.updateMIDI(\fm, v.value);
+      },
+      layout: \vert2
+    ),
+    \amp ->
+    EZKnob.new(w, self.elementStyle.knobSize, 'amp', [0, 4, 2],
+      action: {|v|
+        self.synthObj.setArgs(\amp, v.value);
+        self.updateMIDI(\amp, v.value);
+      },
+      layout: \vert2
+    )
 	]);
+
 	w.vert({|v|
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", { 
+			ToggleButton(v, " P ", {
 				self.synthObj.playSynth;
-			}, { 
+			}, {
 				self.synthObj.stopSynth;
 			}).view,
+
 			\mute ->
 			ToggleButton(v, " B ", {
-				self.synthObj.runSynth(false); 
-				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_1, 
+				self.synthObj.runSynth(false);
+				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_1,
 					[\in, self.synthObj.synthArgDictionary.at(\in),
 						\out, self.synthObj.synthArgDictionary.at(\out)
 					]
 				);
-			}, { 
+			}, {
 				self.synthObj.runSynth(true);
 				(self.bpObj.notNil).if({ self.bpObj.free });
 			}).view
 		]);
+
 		(self.showIO).if({
 			self.elementDictionary.put(\out,
 				NumberBox(v, self.elementStyle.smallBoxSize)
 					.action_({|v| self.synthObj.setArgs(\out, v.value) })
 			);
 		});
+
 		ActionButton(v, " S ", {
 			Dialog.savePanel({|path|
 				var dict;
@@ -219,21 +220,23 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});	
+		});
 	}, 20@82);
 };
+
 ~moogVcfGui.valueDictionary=Dictionary[
-	\freq -> 440, 
-	\q -> 0.75, 
+	\freq -> 440,
+	\q -> 0.75,
 	\fm -> 0,
 	\amp -> 1,
 	\fm_in -> 37,
 	\in -> 21,
-	\out -> 0, 
-	\mute -> 0, 
+	\out -> 0,
+	\mute -> 0,
 	\play -> 1
 ];
-~moogVcfGui.setValues={|self, argdict|
+
+~moogVcfGui.setValues = {|self, argdict|
 	var dict, newfreq;
 	(argdict.notNil).if({
 		dict=argdict.deepCopy;
@@ -249,7 +252,7 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 						try { self.elementDictionary.at(key).perform(vkey, vval) };
 					});
 				}, {
-					((self.elementDictionary.at(key).isKindOf(EZSlider)) || 
+					((self.elementDictionary.at(key).isKindOf(EZSlider)) ||
 						(self.elementDictionary.at(key).isKindOf(EZKnob))).if({
 						try { self.elementDictionary.at(key).value_(value) };
 					}, {
@@ -272,29 +275,29 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\freq), 0.0078, \ffreq, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\freq, v); 
-				self.updateGui(\freq, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\freq), 0.0078, \ffreq,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\freq, v);
+				self.updateGui(\freq, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\freq),
-		self.ccDictionary.at(\q), 0.0078, [0, 1.25], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\q, v); 
-				self.updateGui(\q, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\q), 0.0078, [0, 1.25],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\q, v);
+				self.updateGui(\q, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\q),
-		self.ccDictionary.at(\fm), 0.0078, [0, 32, 10], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\fm, v); 
-				self.updateGui(\fm, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\fm), 0.0078, [0, 32, 10],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\fm, v);
+				self.updateGui(\fm, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\fm),
-		self.ccDictionary.at(\amp), 0.0078, [0, 4, 2], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\amp, v); 
-				self.updateGui(\amp, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\amp), 0.0078, [0, 4, 2],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\amp, v);
+				self.updateGui(\amp, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\amp)
 	);
 	self.responderObj;

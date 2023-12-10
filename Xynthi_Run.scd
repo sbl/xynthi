@@ -433,6 +433,7 @@ s.waitForBoot {
 		~synthWin.startRow;
 		~leftWin = FlowView(~synthWin, 245@470);
     ~xynthi.vco1.theGui.displayGui(~leftWin);
+    ~xynthi.vco1.theGui.displayGui(~leftWin);
     ~leftWin.startRow;
 
     ~xynthi.vco2.theGui.displayGui(~leftWin);
@@ -457,10 +458,10 @@ s.waitForBoot {
     // matrix
 		~xynthi.matrix.makeMatrix(~midWin);
 
-
-    /*
     ~rightWin = FlowView(~synthWin, 340@470);
 		~xynthi.vcf.theGui.displayGui(~rightWin);
+
+    /*
 		~rightWin.startRow;
 
 
