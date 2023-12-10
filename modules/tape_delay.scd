@@ -4,7 +4,7 @@
 // synthDef //
 SynthDef(\bp_2, {|in=21, out=0|
 		Out.ar(out, In.ar(in, 2));
-}).send(s);
+}).add;
 
 SynthDef(\td_22, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0.667, w_depth=0.00027, rotate=0.0, mix=0.2, i_max_del=8|
 	var sig, mod, del, fbs, fb;
@@ -17,7 +17,7 @@ SynthDef(\td_22, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	del=LPF.ar(HPF.ar(del, hpf), lpf);
 	LocalOut.ar(del);
 	Out.ar(out, 1 - mix * sig + (mix * del));
-}, [0.02]).send(s);
+}, [0.02]).add;
 
 SynthDef(\td_12, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0.667, w_depth=0.00027, rotate=0.0, mix=0.2, i_max_del=8|
 	var sig, mod, del, fbs, fb;
@@ -30,7 +30,7 @@ SynthDef(\td_12, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	del=LPF.ar(HPF.ar(del, hpf), lpf);
 	LocalOut.ar(del);
 	Out.ar(out, 1 - mix * sig + (mix * del));
-}, [0.02]).send(s);
+}, [0.02]).add;
 
 SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0.667, w_depth=0.00027, mix=0.2, i_max_del=8|
 	var sig, mod, del, fbs, fb;
@@ -42,7 +42,7 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	del=LPF.ar(HPF.ar(del, hpf), lpf);
 	LocalOut.ar(del);
 	Out.ar(out, 1 - mix * sig + (mix * del));
-}, [0.02]).send(s);
+}, [0.02]).add;
 
 // synthObj //
 ~tdelay=~busControlledSynth.reproduce;
@@ -66,12 +66,16 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	busarr.setn(self.defaultSettings);
 	self.busarr=busarr;
 };
+
 // gui //
-~tdelayGui=~buildGui.reproduce;
-~tdelayGui.synthObj=~tdelay;
-~tdelayGui.makeGui={|self, w|
+
+~tdelayGui = ~buildGui.reproduce;
+~tdelayGui.synthObj = ~tdelay;
+~tdelayGui.makeGui = {|self, w|
 	var vert;
-	self.elementDictionary=Dictionary.new;
+
+  self.elementDictionary=Dictionary.new;
+
 	(self.showIO).if({
 		self.elementDictionary.put(
 			\in,
@@ -79,120 +83,103 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 			.action_({|v| self.synthObj.setArgs(\in, v.value) })
 		);
 	});
+
 	self.elementDictionary.putAll(Dictionary[
 		\mix ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'mix', \amp,
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\mix, v.value);
 				self.updateMIDI(\mix, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\delay ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'delay', [0, 8, 3],
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\delay, v.value);
 				self.updateMIDI(\delay, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\time ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'time', [0, 60, 4],
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\time, v.value);
 				self.updateMIDI(\time, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
-		),
+      layout: \vert2
+    ),
 		\rotate ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'rot', \pan,
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\rotate, v.value);
 				self.updateMIDI(\rotate, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		)
 	]);
-	w.startRow;
+
+  w.startRow;
 	self.elementDictionary.putAll(Dictionary[
 		\hpf ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'hpf', \ffreq,
-			{|v|
+		EZKnob.new(w, self.elementStyle.knobSize, 'hpf', \freq,
+			action: {|v|
 				self.synthObj.setArgs(\hpf, v.value);
 				self.updateMIDI(\hpf, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
+
 		\lpf ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'lpf', \ffreq,
-			{|v|
+		EZKnob.new(w, self.elementStyle.knobSize, 'lpf', \freq,
+			action: {|v|
 				self.synthObj.setArgs(\lpf, v.value);
 				self.updateMIDI(\lpf, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\w_rate ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'w_rate', [0.1, 6, \exponential],
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\w_rate, v.value);
 				self.updateMIDI(\w_rate, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\w_depth ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'w_dep', [0.0, 0.01, 2],
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\w_depth, v.value);
 				self.updateMIDI(\w_depth, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		)
 	]);
+
 	w.vert({|v|
+
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", { 
+			ToggleButton(v, " P ", {
 				self.synthObj.playSynth;
-			}, { 
+			}, {
 				self.synthObj.stopSynth;
 			}).view,
+
 			\mute ->
 			ToggleButton(v, " B ", {
-				self.synthObj.runSynth(false); 
-				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_2, 
+				self.synthObj.runSynth(false);
+				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_2,
 					[\in, self.synthObj.synthArgDictionary.at(\in),
 						\out, self.synthObj.synthArgDictionary.at(\out)
 					]
 				);
-			}, { 
+			}, {
 				self.synthObj.runSynth(true);
 				(self.bpObj.notNil).if({ self.bpObj.free });
 			}).view
 		]);
+
 		(self.showIO).if({
 			self.elementDictionary.put(
 				\out,
@@ -200,6 +187,7 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 					.action_({|v| self.synthObj.setArgs(\out, v.value) })
 			);
 		});
+
 		ActionButton(v, " S ", {
 			Dialog.savePanel({|path|
 				var dict;
@@ -207,26 +195,28 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 				dict.writeTextArchive(path);
 			})
 		});
+
 		ActionButton(v, " L ", {
 			Dialog.getPaths({|path|
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});	
+		});
 	}, 20@82);
 };
+
 ~tdelayGui.valueDictionary=Dictionary[
-	\mix -> 0.2, 
+	\mix -> 0.2,
 	\delay -> 0.2,
-	\time -> 5, 
+	\time -> 5,
 	\lpf -> 8200,
 	\hpf -> 330,
 	\w_rate -> 0.667,
 	\w_depth -> 0.00027,
 	\rotate -> 0.0,
 	\in -> 22,
-	\out -> 0, 
-	\mute -> 0, 
+	\out -> 0,
+	\mute -> 0,
 	\play -> 1
 ];
 
@@ -239,57 +229,58 @@ SynthDef(\td_11, {|out=0, in=32, delay=0.2, time=10, hpf=330, lpf=8200, w_rate=0
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\mix), 0.0078, \amp, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\mix, v); 
-				self.updateGui(\mix, v); 
-			}, 
+		self.ccDictionary.at(\mix), 0.0078, \amp,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\mix, v);
+				self.updateGui(\mix, v);
+			},
 			self.valueDictionary.at(\mix, \valueNoAction_),
-		self.ccDictionary.at(\delay), 0.0078, [0, 8, 2], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\delay, v); 
-				self.updateGui(\delay, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\delay), 0.0078, [0, 8, 2],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\delay, v);
+				self.updateGui(\delay, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\delay),
-		self.ccDictionary.at(\time), 0.0078, [0, 60, 4], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\time, v); 
-				self.updateGui(\time, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\time), 0.0078, [0, 60, 4],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\time, v);
+				self.updateGui(\time, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\time),
-		self.ccDictionary.at(\hpf), 0.0078, \ffreq, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\hpf, v); 
-				self.updateGui(\hpf, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\hpf), 0.0078, \ffreq,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\hpf, v);
+				self.updateGui(\hpf, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\hpf),
-		self.ccDictionary.at(\lpf), 0.0078, \ffreq, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\lpf, v); 
-				self.updateGui(\lpf, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\lpf), 0.0078, \ffreq,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\lpf, v);
+				self.updateGui(\lpf, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\lpf),
-		self.ccDictionary.at(\w_rate), 0.0078, [0.1, 6, \exponential], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\w_rate, v); 
-				self.updateGui(\w_rate, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\w_rate), 0.0078, [0.1, 6, \exponential],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\w_rate, v);
+				self.updateGui(\w_rate, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\w_rate),
-		self.ccDictionary.at(\w_depth), 0.0078, [0.0, 0.01, 2], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\w_depth, v); 
-				self.updateGui(\w_depth, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\w_depth), 0.0078, [0.0, 0.01, 2],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\w_depth, v);
+				self.updateGui(\w_depth, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\w_depth),
-		self.ccDictionary.at(\rotate), 0.0078, \pan, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\rotate, v); 
-				self.updateGui(\rotate, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\rotate), 0.0078, \pan,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\rotate, v);
+				self.updateGui(\rotate, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\rotate)
 	);
 	self.responderObj;
 };
+
 ~tdelayInstr=(
 	reproduce: {|self|
 		var newSelf;

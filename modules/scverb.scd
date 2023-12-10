@@ -4,7 +4,7 @@
 // synthDef //
 SynthDef(\bp_2, {|in=21, out=0|
 		Out.ar(out, In.ar(in, 2));
-}).send(s);
+}).add;
 
 SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -26,7 +26,7 @@ SynthDef(\scverb_22, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * [Mix.ar([filts[0], filts[2], filts[4], filts[6]]), Mix.ar([filts[1], filts[3], filts[5], filts[7]])])
 	);
-}).send(s);
+}).add;
 
 SynthDef(\scverb_12, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -48,7 +48,7 @@ SynthDef(\scverb_12, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * [Mix.ar([filts[0], filts[2], filts[4], filts[6]]), Mix.ar([filts[1], filts[3], filts[5], filts[7]])])
 	);
-}).send(s);
+}).add;
 
 SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	var apj, sig, mods, delays, dts, fbs, fb, filts;
@@ -70,7 +70,7 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	Out.ar(out,
 		1 - mix * sig + (mix * 0.35 * Mix.ar(filts))
 	);
-}).send(s);
+}).add;
 
 // synthObj //
 ~scverb=~busControlledSynth.reproduce;
@@ -89,71 +89,66 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	busarr.setn(self.defaultSettings);
 	self.busarr=busarr;
 };
+
 // gui //
 ~scverbGui=~buildGui.reproduce;
 ~scverbGui.synthObj=~scverb;
 ~scverbGui.makeGui={|self, w|
 	var vert;
+
 	self.elementDictionary=Dictionary.new;
-	(self.showIO).if({
+
+  (self.showIO).if({
 		self.elementDictionary.put(
 			\in,
 			NumberBox(w, self.elementStyle.smallBoxSize)
 			.action_({|v| self.synthObj.setArgs(\in, v.value) })
 		);
 	});
+
 	self.elementDictionary.putAll(Dictionary[
 		\mix ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'mix', \amp,
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\mix, v.value);
 				self.updateMIDI(\mix, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\time ->
 		EZKnob.new(w, self.elementStyle.knobSize, 'time', [0, 60, 4],
-			{|v|
+			action: {|v|
 				self.synthObj.setArgs(\time, v.value);
 				self.updateMIDI(\time, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		),
 		\lpf ->
-		EZKnob.new(w, self.elementStyle.knobSize, 'lpf', \ffreq,
-			{|v|
+		EZKnob.new(w, self.elementStyle.knobSize, 'lpf', \freq,
+			action: {|v|
 				self.synthObj.setArgs(\lpf, v.value);
 				self.updateMIDI(\lpf, v.value);
 			},
-			nil,
-			false,
-			self.elementStyle.knobLabel,
-			self.elementStyle.knobNumber
+      layout: \vert2
 		)
 	]);
 	w.vert({|v|
 		self.elementDictionary.putAll(Dictionary[
 			\play ->
-			ToggleButton(v, " P ", { 
+			ToggleButton(v, " P ", {
 				self.synthObj.playSynth;
-			}, { 
+			}, {
 				self.synthObj.stopSynth;
 			}).view,
 			\mute ->
 			ToggleButton(v, " B ", {
-				self.synthObj.runSynth(false); 
-				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_2, 
+				self.synthObj.runSynth(false);
+				self.bpObj=Synth.after(self.synthObj.synthObj, \bp_2,
 					[\in, self.synthObj.synthArgDictionary.at(\in),
 						\out, self.synthObj.synthArgDictionary.at(\out)
 					]
 				);
-			}, { 
+			}, {
 				self.synthObj.runSynth(true);
 				(self.bpObj.notNil).if({ self.bpObj.free });
 			}).view
@@ -177,16 +172,17 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 				self.valueDictionary=Object.readTextArchive(path[0]);
 				self.setValues;
 			})
-		});	
+		});
 	}, 20@82);
 };
+
 ~scverbGui.valueDictionary=Dictionary[
-	\mix -> 0.2, 
-	\time -> 5, 
+	\mix -> 0.2,
+	\time -> 5,
 	\lpf -> 8200,
 	\in -> 22,
-	\out -> 0, 
-	\mute -> 0, 
+	\out -> 0,
+	\mute -> 0,
 	\play -> 1
 ];
 
@@ -199,27 +195,28 @@ SynthDef(\scverb_11, {|out=0, in=22, mix=0.2, time=5, lpf=8200, srate=0|
 	self.responderObj=IncDecResponderBank(
 		self.src,
 		self.chan,
-		self.ccDictionary.at(\mix), 0.0078, \amp, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\mix, v); 
-				self.updateGui(\mix, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\mix), 0.0078, \amp,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\mix, v);
+				self.updateGui(\mix, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\mix),
-		self.ccDictionary.at(\time), 0.0078, [0, 60, 4], 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\time, v); 
-				self.updateGui(\time, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\time), 0.0078, [0, 60, 4],
+			{|s, c, n, v|
+				self.synthObj.setArgs(\time, v);
+				self.updateGui(\time, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\time),
-		self.ccDictionary.at(\lpf), 0.0078, \ffreq, 
-			{|s, c, n, v| 
-				self.synthObj.setArgs(\lpf, v); 
-				self.updateGui(\lpf, v, \valueNoAction_); 
-			}, 
+		self.ccDictionary.at(\lpf), 0.0078, \ffreq,
+			{|s, c, n, v|
+				self.synthObj.setArgs(\lpf, v);
+				self.updateGui(\lpf, v, \valueNoAction_);
+			},
 			self.valueDictionary.at(\lpf)
 	);
 	self.responderObj;
 };
+
 ~scverbInstr=(
 	reproduce: {|self|
 		var newSelf;

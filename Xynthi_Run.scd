@@ -466,16 +466,23 @@ s.waitForBoot {
 
 		~rightWin.startRow;
 
+    // output mix
 		~xynthi.mix1.theGui.displayGui(~rightWin);
     ~xynthi.mix2.theGui.displayGui(~rightWin);
 		~rightWin.startRow;
 
-    /*
+    // delay
 		~xynthi.del.theGui.displayGui(~rightWin);
 		~rightWin.startRow;
+
+    // reverb
 		~xynthi.rev.theGui.displayGui(~rightWin);
 		~synthWin.startRow;
+
+    /*
 		~xynthi.env1.theGui.displayGui(~synthWin);
+
+
 		~xynthi.env2.theGui.displayGui(~synthWin);
 		~xynthi.lfo1.theGui.displayGui(~synthWin);
 		~xynthi.lfo2.theGui.displayGui(~synthWin);
