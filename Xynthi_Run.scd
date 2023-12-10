@@ -492,7 +492,7 @@ s.waitForBoot {
 		~synthWin.startRow;
 		~xynthi.modpod.gui(~synthWin);
 
-    /*
+
 		~synthWin.startRow;
 
 		// cc's
@@ -500,6 +500,7 @@ s.waitForBoot {
  			"Xynthi_cc.scd".loadRelative;
 			 "CC Initialized".postln;
 		});
+
 
 		// keyboard stuff
 		heldNotes = List.new;
@@ -526,10 +527,11 @@ s.waitForBoot {
 				~xynthi.vco1.theSynth.masterFreq.setArgs(\freq_in, heldNotes.last.midicps);
 			});
 		};
+
 		Button(~synthWin, 130@18)
 			.states_([["Turn Keyboard On"], ["Turn Keyboard Off"]])
 			.action_({|v|
-				(v.value =  = 0).if({
+				(v.value == 0).if({
 					noteOn.remove;
 					noteOff.remove;
 					bend.remove;
@@ -543,16 +545,19 @@ s.waitForBoot {
 					});
 				});
 			});
+
 		StaticText(~synthWin, 80@18).string_("Bend Range: ").align_(\right);
-		SNBox(~synthWin, 20@18)
+		NumberBox(~synthWin, 20@18)
 			.clipLo_(0)
 			.clipHi_(48)
 			.value_(2)
 			.action_({|v|
 				bendRange = v.value;
 			});
+
+
 		StaticText(~synthWin, 40@18).string_("Lag: ").align_(\right);
-		SNBox(~synthWin, 40@18)
+		NumberBox(~synthWin, 40@18)
 			.clipLo_(0.01)
 			.clipHi_(4)
 			.step_(0.05)
@@ -560,6 +565,7 @@ s.waitForBoot {
 			.action_({|v|
 				~xynthi.vco1.theSynth.masterFreq.setArgs(\lag, v.value);
 			});
+
 		// key actions
 		theMods = [~xynthi.rev, ~xynthi.del, ~xynthi.vco1, ~xynthi.vco2,
 			~xynthi.vco3, ~xynthi.in1, ~xynthi.in2, ~xynthi.noise1,
@@ -568,11 +574,11 @@ s.waitForBoot {
 		Button(~synthWin, 160@18)
 			.states_([["Turn Key Actions On"], ["Turn Key Actions Off"]])
 			.action_({|v|
-				(v.value =  = 0).if({
+				(v.value == 0).if({
 					~synthWin.window.view.keyDownAction_(nil);
 				}, {
 					~synthWin.window.view.keyDownAction_({|v, char, mod, uni|
-						(char =  = $e).if({
+						(char == $e).if({
 							~xynthi.env1.theGui.elementDictionary.at(\gate).valueAction_(
 								(~xynthi.env1.theGui.elementDictionary.at(\gate).value - 1).abs
 							);
@@ -591,13 +597,11 @@ s.waitForBoot {
 				});
 			});
 
-    */
 		~synthWin.resizeToFit;
 		~synthWin.front;
 
     // FIXME(sbl): revert after debug
     // ~synthWin.window.userCanClose_(false);
-
 	}.defer;
 };
 )
