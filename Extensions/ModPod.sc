@@ -9,15 +9,15 @@ ModPod {
 	*initClass {
 		SynthDef("mpRouter", {|in_mod=17, mod_out=16, scale=0.0, min= -1.0, max=1.0|
 			Out.kr(mod_out, In.kr(in_mod) * scale.range(min, max))
-		}).add;
+		}).store;
 
 		SynthDef("mpMixerring", {|value=1, in=17, out=16|
 			Out.kr(out, value.ring1(In.kr(in)))
-		}).add;
+		}).store;
 
 		SynthDef("mpMixeradd", {|value=1, in=17, out=16|
 			Out.kr(out, value + In.kr(in))
-		}).add;
+		}).store;
 	}
 
 	*new {|numpods, receivers, modulators|
@@ -61,7 +61,7 @@ ModPod {
 			recTargets.put(count, each[2]);
 			recBusses.put(count, each[3]);
 			modtype=each[4] ? \add;
-			specfunc=each[5] ? {|v| \pan.asSpec.map(v)};
+			specfunc=each[5] ? {|v| var val; val=\pan.asSpec.map(v); val.squared * val.sign; };
 			sliderSpec.put(count, specfunc);
 			mixSynth.put(count, Synth.basicNew(\mpMixer ++ modtype));
 			recBundle.put(count, mixSynth.at(count).newMsg(nil,
@@ -208,9 +208,12 @@ ModPod {
 			group[pod].set(\scale, val);
 			(hasGui).if({
 				{
+					/*
 					minval=sliderSpec[recIndex[pod]].value(0);
 					maxval=sliderSpec[recIndex[pod]].value(1);
 					unmapped=val - minval * (maxval - minval).reciprocal;
+					*/
+					unmapped=val.abs.sqrt * val.sign + 1 * 0.5;
 					modSlider[pod].value_(unmapped);
 					viaSlider[pod].lo_(unmapped);
 					viaSlider[pod].hi_(unmapped);
@@ -228,11 +231,15 @@ ModPod {
 			group[pod].set(\min, lo, \max, hi);
 			(hasGui).if({
 				{
+					/*
 					minval=sliderSpec[recIndex[pod]].value(0);
 					maxval=sliderSpec[recIndex[pod]].value(1);
 					unmap=(maxval - minval).reciprocal;
 					lo_unmap=lo - minval * unmap;
 					hi_unmap=hi - minval * unmap;
+					*/
+					lo_unmap=lo.abs.sqrt * lo.sign + 1 * 0.5;
+					hi_unmap=hi.abs.sqrt * hi.sign + 1 * 0.5;
 					modSlider[pod].value_(hi_unmap);
 					viaSlider[pod].lo_(lo_unmap);
 					viaSlider[pod].hi_(hi_unmap);
@@ -360,9 +367,12 @@ ModPod {
 			msg=[group[pod].setMsg(\scale, val)];
 			(hasGui).if({
 				{
+					/*
 					minval=sliderSpec[recIndex[pod]].value(0);
 					maxval=sliderSpec[recIndex[pod]].value(1);
 					unmapped=val - minval * (maxval - minval).reciprocal;
+					*/
+					unmapped=val.abs.sqrt * val.sign + 1 * 0.5;
 					modSlider[pod].value_(unmapped);
 					viaSlider[pod].lo_(unmapped);
 					viaSlider[pod].hi_(unmapped);
@@ -382,11 +392,15 @@ ModPod {
 			msg=[group[pod].setMsg(\min, lo, \max, hi)];
 			(hasGui).if({
 				{
+					/*
 					minval=sliderSpec[recIndex[pod]].value(0);
 					maxval=sliderSpec[recIndex[pod]].value(1);
 					unmap=(maxval - minval).reciprocal;
 					lo_unmap=lo - minval * unmap;
 					hi_unmap=hi - minval * unmap;
+					*/
+					lo_unmap=lo.abs.sqrt * lo.sign + 1 * 0.5;
+					hi_unmap=hi.abs.sqrt * hi.sign + 1 * 0.5;
 					modSlider[pod].value_(hi_unmap);
 					viaSlider[pod].lo_(lo_unmap);
 					viaSlider[pod].hi_(hi_unmap);
@@ -411,7 +425,7 @@ ModPod {
 			(podIncr >= perRow).if({ podIncr=0; view.startRow; });
 			view.vert({|v|
 					v.flow({|h|
-					bypassButt[i]=SCButton(h, 60@18)
+					bypassButt[i]=SCButton(h, 60@17)
 						.states_([["Bypass", Color.white, Color.black],
 							["Bypass", Color.black, Color.white]])
 						.action_({|v|
@@ -425,23 +439,23 @@ ModPod {
 							viaSlider[i].activeLo_(0.5);
 							viaSlider[i].activeHi_(0.5)
 						});
-					}, 78@18);
-				recMenu[i]=SCPopUpMenu(v, 88@18)
+					}, 84@18);
+				recMenu[i]=SCPopUpMenu(v, 80@17)
 					.items_(["off"] ++ recNames)
 					.action_({|v| this.setReceiver(i, v.value) })
 					.value_(stateSet[i][1]);
-				viaMenu[i]=SCPopUpMenu(v, 88@18)
+				viaMenu[i]=SCPopUpMenu(v, 80@17)
 					.items_(["off"] ++ modNames)
 					.action_({|v| this.setVia(i, v.value); })
 					.value_(stateSet[i][2]);
-				modMenu[i]=SCPopUpMenu(v, 88@18)
+				modMenu[i]=SCPopUpMenu(v, 80@17)
 					.items_(["off"] ++ modNames)
 					.action_({|v| this.setModulator(i, v.value); })
 					.value_(stateSet[i][3]);
-			}, 88@88);
-			composite=SCCompositeView(view, 15@95);
+			}, 86@82);
+			composite=SCCompositeView(view, 15@86);
 			viaSlider[i]=SCRangeSlider(composite,
-				Rect(composite.bounds.left, composite.bounds.top, 10, 89))
+				Rect(composite.bounds.left, composite.bounds.top, 10, 85))
 				.action_({|v|
 					var min, max;
 					min=sliderSpec[recIndex[i]].value(v.lo);
@@ -453,7 +467,7 @@ ModPod {
 				})
 				.visible_(false);
 			modSlider[i]=SCSlider(composite,
-				Rect(composite.bounds.left, composite.bounds.top, 10, 89))
+				Rect(composite.bounds.left, composite.bounds.top, 10, 85))
 				.action_({|v|
 					var val;
 					val=sliderSpec[recIndex[i]].value(v.value);

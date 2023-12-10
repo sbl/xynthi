@@ -1,14 +1,16 @@
 // blackrain
 SNBox : NumberBox {
 	var <>clipLo = -inf, <>clipHi = inf, hit, inc=1.0, <>scroll=true, <>shift_step=0.1, <>ctrl_step=10;
+  var keyString;
 
-	*viewClass { ^NumberBox }
+	*viewClass { ^SCNumberBox }
 /*
 	init { arg argParent, argBounds;
 		super.init(argParent, argBounds).boxColor_(Color.blue(0.0,0.1));
 	}
 */
 	value_ { arg val;
+		keyString = nil;
 		this.stringColor = normalColor;
 		object = val.clip(clipLo, clipHi);
 		this.string = object.asString;
