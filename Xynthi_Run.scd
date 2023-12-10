@@ -1,35 +1,36 @@
-
-
 /*
-    Xynthi
-    Copyright (c) 2006 Bhob Rainey. All rights reserved.
-    http://www.bhobrainey.net
+Xynthi
+Copyright (c) 2006 Bhob Rainey. All rights reserved.
+http://www.bhobrainey.net
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA    02111-1307    USA
 */
 
 // inspired by the ems synthi series... not a model...
 // reverb is a port of sean costello's scverb from csound
 
+
 (
-Routine({
+s.reboot;
+
+s.waitForBoot {
 	var msg, tmpmsg, unpackMsg, tmparr, audioMods, groups, revInBus, revOutBus, delInBus, mix1OutBus, mix2OutBus, matrix, freqInstr, vco1, vco2, vco3, in1, in2, noise1, env1, env2, ringer, dist, moogVcf, mixer1, mixer2, del, scverb, lfo1, lfo2, lfo3, modpod, index, prename, theMods, quickPre, revSr, muteSynth, noteOn, noteOff, noteOnFunc, noteOffFunc, bend, bendRange=2, heldNotes, keyMode=0;
 
 	"Loading Modules".postln;
-  "SynthEvents.scd".loadRelative();
-  "modules/*.scd".loadRelative();
+	"SynthEvents.scd".loadRelative;
+	"modules/*.scd".loadRelative;
 
 	SynthDef(\soft_mute_2, {|in=0, gate=1|
 		var env, input;
@@ -42,9 +43,10 @@ Routine({
 	s.sync;
 
 	"Initializing Synths".postln;
-	msg=List.new;
-	tmpmsg=List.new;
-	unpackMsg={|arr|
+
+	msg = List.new;
+	tmpmsg = List.new;
+	unpackMsg = {|arr|
 		arr.do({|e, c|
 			(e.notNil).if({
 				(e[0].isArray).if({
@@ -55,9 +57,11 @@ Routine({
 			});
 		});
 	};
+
 	audioMods=[\vco1, \vco2, \vco3, \in1, \in2, \noise1, \env1, \ringer, \dist, \moogVcf, \mixer1, \mixer2, \del, \scverb, \out];
+
 	// make groups
-	groups=Dictionary.new;
+	groups = Dictionary.new;
 	audioMods.do({|e, c|
 		(c==0).if({
 			groups.put(e, Group.basicNew(s));
@@ -258,6 +262,8 @@ Routine({
 		["ENV2", env2.theSynth.outbus.index]
 		]
 	);
+
+  // global instance
 	~xynthi=(
 		modDict: Dictionary[\vco1 -> vco1.theGui, \vco2 -> vco2.theGui, \vco3 -> vco3.theGui, \in1 -> in1.theGui, \in2 -> in2.theGui, \noise1 -> noise1.theGui, \env1 -> env1.theGui, \env2 -> env2.theGui, \ring -> ringer.theGui, \dist -> dist.theGui, \filt -> moogVcf.theGui, \mix1 -> mixer1.theGui, \mix2 -> mixer2.theGui, \del -> del.theGui, \verb -> scverb.theGui, \lfo1 -> lfo1.theGui, \lfo2 -> lfo2.theGui, \lfo3 -> lfo3.theGui, \matrix -> matrix, \modpod -> modpod],
 		groups: groups,
@@ -287,12 +293,15 @@ Routine({
 
 	s.sync;
 
+  ///// ......
+
+
 	// do the gui
 	quickPre=Array.newClear(20);
 	// make the window
 	"Creating GUI".postln;
 	{
-		~synthWin=PageLayout("Xynthi");
+		~synthWin=MultiPageLayout("Xynthi");
 		ActionButton(~synthWin, " Save ", {
 			Dialog.savePanel({|path|
 				var state;
@@ -336,12 +345,13 @@ Routine({
 					});
 				});
 		});
+
 		prename=StaticText(~synthWin, 80@18).string_("Default");
 		Button(~synthWin, 70@18)
 			.states_([["Batch"]])
 			.action_({
 				var win, pres, size;
-				SelectButtonSet(win=PageLayout.new("Select group:"),
+				SelectButtonSet(win=MultiPageLayout.new("Select group:"),
 					["Main", "Matrix", "ModPod"],
 					{|in|
 						switch (in)
@@ -364,7 +374,10 @@ Routine({
 				win.resizeToFit;
 				win.front;
 			});
-		Button(~synthWin, 75@18)
+
+
+    // RECORDING
+    Button(~synthWin, 75@18)
 			.states_([["prepare rec"], ["start rec", Color.white, Color.black],
 				["recording", Color.white, Color.red], ["stopped"]])
 			.action_({|v|
@@ -373,6 +386,8 @@ Routine({
 					{ 2 } { s.record }
 					{ 3 } { s.stopRecording; v.value_(0) };
 			});
+
+    // MutE
 		Button(~synthWin, 70@18)
 			.states_([["mute"], ["unmute"]])
 			.action_({|v|
@@ -387,6 +402,8 @@ Routine({
 					muteSynth.release;
 				});
 			});
+
+    // REBOOT
 		Button(~synthWin, 70@18)
 			.states_([[" Reboot "]])
 			.action_({
@@ -397,29 +414,37 @@ Routine({
 					s.wait(\done);
 					0.1.wait;
 					s.waitForBoot({
-						try { "~/scwork/startup.rtf".loadPaths; };
 						"Xynthi_Run.rtf".loadPaths;
 					});
 				}).play
 			});
+
+
+
 		~synthWin.startRow;
-		~leftWin=FlowView(~synthWin, 265@515);
-		~xynthi.vco1.theGui.displayGui(~leftWin);
-		~leftWin.startRow;
-		~xynthi.vco2.theGui.displayGui(~leftWin);
-		~leftWin.startRow;
-		~xynthi.vco3.theGui.displayGui(~leftWin);
-		~leftWin.startRow;
-		~xynthi.in1.theGui.displayGui(~leftWin);
-		~xynthi.in2.theGui.valueDictionary.put(\in, 2);
-		~xynthi.in2.theGui.displayGui(~leftWin);
-		~midWin=FlowView(~synthWin, 280@515);
+		~leftWin=FlowView(~synthWin, 245@470);
+    ~xynthi.vco1.theGui.displayGui(~leftWin);
+    ~leftWin.startRow;
+
+    ~xynthi.vco2.theGui.displayGui(~leftWin);
+    ~leftWin.startRow;
+
+    ~xynthi.vco3.theGui.displayGui(~leftWin);
+    ~leftWin.startRow;
+
+    // ~xynthi.in1.theGui.displayGui(~leftWin);
+    // ~xynthi.in2.theGui.valueDictionary.put(\in, 2);
+    // ~xynthi.in2.theGui.displayGui(~leftWin);
+
+    /*
+
+		~midWin=FlowView(~synthWin, 280@470);
 		~xynthi.noise1.theGui.displayGui(~midWin);
 		~xynthi.ringer.theGui.displayGui(~midWin);
 		~xynthi.dist.theGui.displayGui(~midWin);
 		~midWin.startRow;
 		~xynthi.matrix.makeMatrix(~midWin);
-		~rightWin=FlowView(~synthWin, 370@515);
+		~rightWin=FlowView(~synthWin, 340@470);
 		~xynthi.vcf.theGui.displayGui(~rightWin);
 		~rightWin.startRow;
 		~xynthi.mix1.theGui.displayGui(~rightWin);
@@ -440,8 +465,8 @@ Routine({
 
 		// cc's
 		ActionButton(~synthWin, "Init CC Controllers", {
-			"Xynthi_cc.rtf".loadPaths;
-			// "CC Initialized".postln;
+ 			"Xynthi_cc.scd".loadRelative;
+			 "CC Initialized".postln;
 		});
 
 		// keyboard stuff
@@ -533,9 +558,14 @@ Routine({
 					});
 				});
 			});
+
+    */
 		~synthWin.resizeToFit;
 		~synthWin.front;
-		~synthWin.window.userCanClose_(false);
+
+    // FIXME(sbl): revert after debug
+    // ~synthWin.window.userCanClose_(false);
+
 	}.defer
-}).play
+};
 )

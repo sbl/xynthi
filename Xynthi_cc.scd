@@ -1,5 +1,3 @@
-
-
 ~initMidi.value;
 ~xynthi.vco1.theMidi.nums=(64..67);
 ~xynthi.vco1.theMidi.ccDictionary=Dictionary[
@@ -8,6 +6,7 @@
 	\pw -> 66,
 	\amp -> 67
 ];
+
 ~xynthi.vco1.theMidi.valueDictionary=~xynthi.vco1.theGui.valueDictionary.copy;
 (~xynthi.vco1.theMidi.responderObj.isNil).if({ ~xynthi.vco1.theMidi.initialize; }, 	{ ~xynthi.vco1.theMidi.removeResponder; ~xynthi.vco1.theMidi.initialize });
 ~xynthi.vco1.midiOn;
@@ -18,6 +17,7 @@
 	\pw -> 70,
 	\amp -> 71
 ];
+
 ~xynthi.vco2.theMidi.valueDictionary=~xynthi.vco2.theGui.valueDictionary.copy;
 (~xynthi.vco2.theMidi.responderObj.isNil).if({ ~xynthi.vco2.theMidi.initialize; }, 	{ ~xynthi.vco2.theMidi.removeResponder; ~xynthi.vco2.theMidi.initialize });
 ~xynthi.vco2.midiOn;
@@ -28,6 +28,7 @@
 	\pw -> 74,
 	\amp -> 75
 ];
+
 ~xynthi.vco3.theMidi.valueDictionary=~xynthi.vco3.theGui.valueDictionary.copy;
 (~xynthi.vco3.theMidi.responderObj.isNil).if({ ~xynthi.vco3.theMidi.initialize; }, 	{ ~xynthi.vco3.theMidi.removeResponder; ~xynthi.vco3.theMidi.initialize });
 ~xynthi.vco3.midiOn;
@@ -38,6 +39,7 @@
 	\fm -> 78,
 	\amp -> 79
 ];
+
 ~xynthi.vcf.theMidi.valueDictionary=~xynthi.vcf.theGui.valueDictionary.copy;
 (~xynthi.vcf.theMidi.responderObj.isNil).if({ ~xynthi.vcf.theMidi.initialize; }, 	{ ~xynthi.vcf.theMidi.removeResponder; ~xynthi.vcf.theMidi.initialize });
 ~xynthi.vcf.midiOn;
@@ -62,6 +64,7 @@
 	\mix -> 84,
 	\lpf -> 255
 ];
+
 ~xynthi.rev.theMidi.valueDictionary=~xynthi.rev.theGui.valueDictionary.copy;
 (~xynthi.rev.theMidi.responderObj.isNil).if({ ~xynthi.rev.theMidi.initialize; }, 	{ ~xynthi.rev.theMidi.removeResponder; ~xynthi.rev.theMidi.initialize });
 ~xynthi.rev.midiOn;
