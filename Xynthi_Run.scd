@@ -454,11 +454,16 @@ s.waitForBoot {
 
     ~midWin.startRow;
 
-    /*
+    // matrix
 		~xynthi.matrix.makeMatrix(~midWin);
-		~rightWin = FlowView(~synthWin, 340@470);
+
+
+    /*
+    ~rightWin = FlowView(~synthWin, 340@470);
 		~xynthi.vcf.theGui.displayGui(~rightWin);
 		~rightWin.startRow;
+
+
 		~xynthi.mix1.theGui.displayGui(~rightWin);
 		~xynthi.mix2.theGui.displayGui(~rightWin);
 		~rightWin.startRow;

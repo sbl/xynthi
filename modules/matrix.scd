@@ -1,11 +1,11 @@
 (
 SynthDef(\matrix_router, {|i_in=32, i_out=0|
 	Out.ar(i_out, In.ar(i_in));
-}).send(s);
+}).add;
 
 SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 	Out.ar(i_out, InFeedback.ar(i_in));
-}).send(s);
+}).add;
 
 ~audioMatrix = (
 	reproduce: {|self|
@@ -22,78 +22,91 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 	quickPre: Array.newClear(32),
 	makeMatrix: {|self, w|
 		var boxView, boxAct, synthName, prename, inSize, outSize, boxState;
-		inSize=self.inputArr.size;
-		outSize=self.outputArr.size;
-		self.buttonArr=Array.fill2D(outSize, inSize);
-		self.synthArr=Array.fill2D(outSize, inSize);
-		self.boxState=Array.fill2D(outSize, inSize, 0);
+
+    inSize = self.inputArr.size;
+		outSize = self.outputArr.size;
+		self.buttonArr = Array.fill2D(outSize, inSize);
+		self.synthArr = Array.fill2D(outSize, inSize);
+		self.boxState = Array.fill2D(outSize, inSize, 0);
+
 		w.vert({|v|
 			StaticText(v, 40@65).string_("");
 			self.outputArr.do({|e, c|
 				StaticText(v, 40@12).string_(self.outputNames.at(c)).align_(\right);
 			});
 		}, 40@(18 * outSize));
-		w.vert({|v|
+
+    w.vert({|v|
 			v.flow({|x|
 				self.inputNames.do({|e, c|
 					var vertName;
-					vertName='';
+					vertName = '';
 					e.do({|l, c|
 						(c < (e.size - 1)).if({
-							vertName=vertName ++ l ++ "\r\n";
+							vertName = vertName ++ l ++ "\r\n";
 						}, {
-							vertName=vertName ++ l;
+							vertName = vertName ++ l;
 						});
 					});
 					StaticText(x, 10@60).string_(vertName).align_(\center);
 				});
 			}, (14 * inSize + 5)@60);
-			boxView=CompositeView(v, (inSize * 14)@(outSize    * 16));
-			boxAct={|l|
+
+			boxView = CompositeView(v, (inSize * 14)@(outSize * 16));
+			boxAct = {|l|
 				var v, x, y;
-				x=l[0];
-				y=l[1];
-				v=self.boxGrid.getState(x, y);
-				(v==0).if({
-					 (self.boxState[y][x]==1).if({ self.synthArr[y][x].free; self.boxState[y][x]=0; });
+				x = l[0];
+				y = l[1];
+				v = self.boxGrid.getState(x, y);
+				(v == 0).if({
+					 if (self.boxState[y][x] == 1) {
+            self.synthArr[y][x].free; self.boxState[y][x]=0;
+          };
 				}, {
-					(self.boxState[y][x]==0).if({
+					(self.boxState[y][x] == 0).if({
 						(self.nodeOrder.indexOf(self.outputArr.at(y)) < self.nodeOrder.indexOf(self.inputArr.at(x))).if({
-							synthName=\matrix_router;
+							synthName = \matrix_router;
 						}, {
-							synthName=\matrix_router_fb;
+							synthName = \matrix_router_fb;
 						});
-						self.synthArr[y][x]=Synth.before(self.inputNodes[x].value,
+						self.synthArr[y][x] = Synth.before(self.inputNodes[x].value,
 							synthName,
 							[\i_in, self.outputArr.at(y), \i_out, self.inputArr.at(x)]
 						);
-						self.boxState[y][x]=1;
+						self.boxState[y][x] = 1;
 					});
 				});
 			};
-			self.boxGrid=BoxGrid.new(boxView, 
-				Rect(boxView.bounds.left, boxView.bounds.top, inSize * 14, outSize * 16), 
-				columns: inSize, rows: outSize)
-				.setBackground_(Color.white)
+
+			self.boxGrid = BoxGrid.new(boxView,
+				Rect(boxView.bounds.left, boxView.bounds.top, inSize * 14, outSize * 16),
+				columns: inSize, rows: outSize);
+
+      self.boxGrid.setBackgrColor_(Color.white)
 				.setNodeBorder_(3)
 				.setFillMode_(true)
 				.setTrailDrag_(true)
 				.nodeDownAction_(boxAct)
 				.nodeTrackAction_(boxAct);
+
 		}, (14 * inSize + 5)@(16 * outSize + 65));
+
 		w.startRow;
-		ActionButton(w, " S ", {
+
+    ActionButton(w, " S ", {
 			Dialog.savePanel({|path|
 				var arr;
 				arr=self.getValues;
 				arr.writeTextArchive(path);
 			})
 		});
+
 		ActionButton(w, " L ", {
 			Dialog.getPaths({|path|
 				self.setValues(Object.readTextArchive(path[0]));
 			})
-		});	
+		});
+
 		self.numQuicks.do({|i|
 			Button(w, 18@16)
 				.states_([[(i + 1).asString]])
@@ -113,14 +126,17 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 		});
 		prename=StaticText(w,18@16).string_('');
 	},
+
 	getValues: {|self|
 		var outState;
 		outState=self.boxGrid.getNodeStates;
 		outState;
 	},
+
 	setValues: {|self, arr|
 		var msg, synthName;
-		msg=List.new;
+
+		msg = List.new;
 		arr.do({|e, c|
 			e.do({|e2, c2|
 				(self.boxState[c][c2] != e2).if({
@@ -139,6 +155,7 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 				});
 			});
 		});
+
 		s.listSendBundle(0.02, msg);
 		self.boxState=arr.deepCopy;
 		{ self.boxGrid.setNodeStates_(arr); }.defer;
