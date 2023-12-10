@@ -464,7 +464,6 @@ s.waitForBoot {
     ~rightWin = FlowView(~synthWin, 340@470);
 		~xynthi.vcf.theGui.displayGui(~rightWin);
 
-
 		~rightWin.startRow;
 
     // output mix
@@ -480,13 +479,16 @@ s.waitForBoot {
 		~xynthi.rev.theGui.displayGui(~rightWin);
 		~synthWin.startRow;
 
-
+    // envelopes
 		~xynthi.env1.theGui.displayGui(~synthWin);
-    /*
 		~xynthi.env2.theGui.displayGui(~synthWin);
-		~xynthi.lfo1.theGui.displayGui(~synthWin);
+
+    // lfos
+    ~xynthi.lfo1.theGui.displayGui(~synthWin);
 		~xynthi.lfo2.theGui.displayGui(~synthWin);
 		~xynthi.lfo3.theGui.displayGui(~synthWin);
+
+    /*
 		~synthWin.startRow;
 		~xynthi.modpod.gui(~synthWin);
 		~synthWin.startRow;
