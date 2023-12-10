@@ -321,6 +321,7 @@ s.waitForBoot {
 				state.writeTextArchive(path);
 			});
 		});
+
 		ActionButton(~synthWin, " Load ", {
 			Dialog.getPaths({|path|
 				var state, name;
@@ -332,6 +333,7 @@ s.waitForBoot {
 				prename.string_(' ' ++ name[name.size - 1]);
 			});
 		});
+
 		12.do({|i|
 			Button(~synthWin, 18@16)
 				.states_([[(i + 1).asString]])
@@ -461,13 +463,14 @@ s.waitForBoot {
     ~rightWin = FlowView(~synthWin, 340@470);
 		~xynthi.vcf.theGui.displayGui(~rightWin);
 
-    /*
-		~rightWin.startRow;
 
+		~rightWin.startRow;
 
 		~xynthi.mix1.theGui.displayGui(~rightWin);
-		~xynthi.mix2.theGui.displayGui(~rightWin);
+    ~xynthi.mix2.theGui.displayGui(~rightWin);
 		~rightWin.startRow;
+
+    /*
 		~xynthi.del.theGui.displayGui(~rightWin);
 		~rightWin.startRow;
 		~xynthi.rev.theGui.displayGui(~rightWin);
