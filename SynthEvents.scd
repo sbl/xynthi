@@ -1,34 +1,36 @@
 (
 ~makeSynthDef = (
-	reproduce: {|self|
-		self.copy;
-	},
-	makeDefObj: {|self, defName, defFunction, lags|
-		self.synthDefName=defName;
-		self.defObj=SynthDef(defName, defFunction, lags);
-	},
-	makeVariants: {|self, variants|
-		self.defVariants=variants;
-	},
-	sendToServer: {|self, server|
-		(self.defObj.notNil).if({
-			(self.defVariants.notNil).if({
-				self.defObj.variants=self.defVariants;
-			});
-			self.defObj.send(server);
-		}, {
-			'No SynthDef defined'.postln;
-		});
-	}
+  reproduce: {|self|
+    self.copy;
+  },
+  makeDefObj: {|self, defName, defFunction, lags|
+    self.synthDefName=defName;
+    self.defObj=SynthDef(defName, defFunction, lags);
+  },
+  makeVariants: {|self, variants|
+    self.defVariants=variants;
+  },
+  sendToServer: {|self, server|
+    (self.defObj.notNil).if({
+      (self.defVariants.notNil).if({
+        self.defObj.variants=self.defVariants;
+      });
+      self.defObj.send(server);
+    }, {
+      'No SynthDef defined'.postln;
+    });
+  }
 );
 
 ~busControlledSynth = (
 	reproduce: {|self, clearBusses=false|
 		var newSelf;
-		newSelf=self.copy;
-		newSelf.synthObj=nil;
-		newSelf.synthArgDictionary=self.synthArgDictionary.copy;
-		(clearBusses).if({
+
+		newSelf = self.copy;
+		newSelf.synthObj = nil;
+		newSelf.synthArgDictionary = self.synthArgDictionary.copy;
+
+    if((clearBusses), {
 			newSelf.busDictionary=nil;
 			newSelf.nodeMap=nil;
 		});
@@ -45,23 +47,27 @@
 	makeBusDictionary: nil,
 	makeNodeMap: {|self|
     // NOTE(sbl): was NodeMap - interface seems to have changed - no map method
-		(self.nodeMap.isNil).if({ self.nodeMap=ProxyNodeMap.new });
-		(self.busDictionary.isNil).if({ self.makeBusDictionary });
+		if (self.nodeMap.isNil) { self.nodeMap=ProxyNodeMap.new };
+		if (self.busDictionary.isNil) { self.makeBusDictionary };
+
 		self.busDictionary.keysValuesDo({|key, value|
 			self.nodeMap.map(key, value);
 		});
 		self.nodeMap;
 	},
 	fastPlay: false,
-	makeSynthArgs: {|self, synthArgs, target, addAction, run|
+
+  makeSynthArgs: {|self, synthArgs, target, addAction, run|
 		var synthArgArr;
 		synthArgArr=Array.new;
-		(target.isNil).if({ target=self.target }, { self.target=target });
-		(addAction.isNil).if({ addAction=self.addAction }, { self.addAction=addAction });
-		(run.isNil).if({ run=self.run }, { self.run=run });
-		(self.synthArgDictionary.isNil).if({ self.synthArgDictionary=Dictionary.new });
+
+		if((target.isNil), { target=self.target }, { self.target=target });
+		if((addAction.isNil), { addAction=self.addAction }, { self.addAction=addAction });
+    if((run.isNil), { run=self.run }, { self.run=run });
+		if((self.synthArgDictionary.isNil), { self.synthArgDictionary=Dictionary.new });
+
 		forBy(0, synthArgs.size - 2, 2, {|i|
-			(self.busDictionary.includesKey(synthArgs[i])).if({
+			if((self.busDictionary.includesKey(synthArgs[i])), {
 				self.server.sendMsg(\c_set,
 					self.busDictionary.at(synthArgs[i]),
 					synthArgs[i + 1]
@@ -70,17 +76,21 @@
 				self.synthArgDictionary.put(synthArgs[i], synthArgs[i + 1]);
 			});
 		});
-		(self.synthArgDictionary.notNil).if({
-			self.synthArgDictionary.keysValuesDo({|key, value|
+
+		if(self.synthArgDictionary.notNil) {
+			self.synthArgDictionary.keysValuesDo {|key, value|
 				synthArgArr=synthArgArr.add(key);
 				synthArgArr=synthArgArr.add(value);
-			});
-		});
+			};
+		};
+
 		[synthArgArr, target, addAction, run];
 	},
+
 	playSynth: {|self, synthArgs, target, addAction, run|
 		var synthArgArr;
-		(self.synthObj.isNil).if({
+
+    if((self.synthObj.isNil), {
 			(self.nodeMap.isNil).if({ self.makeNodeMap });
 			(run.isNil).if({ run=self.run });
 			(self.fastPlay).if({
@@ -90,70 +100,81 @@
 					synthArgs, target, addAction, run
 				);
 			});
-			self.synthObj=Synth(self.synthDefName,
+
+      self.synthObj = Synth(self.synthDefName,
 				synthArgArr,
 				target.asTarget,
 				addAction
 			).run(run);
+
 			self.nodeMap.sendToNode(self.synthObj);
 		});
 		self.synthObj;
 	},
+
 	playSynthMsg: {|self, synthArgs, target, addAction, run|
 		var synthArgArr, msg, mapArr;
-		(self.synthObj.isNil).if({
-			msg=Array.new;
-			(self.nodeMap.isNil).if({ self.makeNodeMap });
-			(run.isNil).if({ run=self.run });
-			(self.fastPlay).if({
+
+		if(self.synthObj.isNil) {
+			msg = Array.new;
+			if((self.nodeMap.isNil), { self.makeNodeMap });
+			if((run.isNil), { run=self.run });
+
+      if((self.fastPlay), {
 				synthArgArr=synthArgs;
 			}, {
 				#synthArgArr, target, addAction, run=self.makeSynthArgs(
 					synthArgs, target, addAction, run
 				);
 			});
-			self.synthObj=Synth.basicNew(self.synthDefName, self.server);
-			msg=msg.add(self.synthObj.newMsg(
+
+			self.synthObj = Synth.basicNew(self.synthDefName, self.server);
+			msg = msg.add(self.synthObj.newMsg(
 				target.asTarget,
 				synthArgArr,
 				addAction
 			));
-			msg=msg.add(self.synthObj.runMsg(run));
-			mapArr=Array.new;
-			self.nodeMap.keysValuesDo({|k, v|
-				mapArr=mapArr.add(k);
-				mapArr=mapArr.add(v.value);
-			});
-			msg=msg.add([14, self.synthObj.nodeID] ++ mapArr);
-		}, {
-			msg=nil;
-		});
+
+			msg = msg.add(self.synthObj.runMsg(run));
+
+      mapArr = Array.new;
+      self.nodeMap.keysValuesDo {|k, v|
+        mapArr=mapArr.add(k);
+        mapArr=mapArr.add(v.value);
+      };
+      msg=msg.add([14, self.synthObj.nodeID] ++ mapArr);
+		};
+
 		msg;
 	},
-	runSynth: {|self, run|
-		(self.synthObj.notNil).if({ self.synthObj.run(run) });
-		self.run=run;
-	},
-	stopSynth: {|self|
-		(self.synthObj.notNil).if({
-			self.synthObj.free;
-			self.synthObj=nil;
-		});
-	},
-	releaseSynth: {|self|
-		(self.synthObj.notNil).if({
-			self.synthObj.release;
-			self.synthObj=nil;
-		});
-	},
+
+  runSynth: {|self, run|
+    (self.synthObj.notNil).if({ self.synthObj.run(run) });
+    self.run=run;
+  },
+
+  stopSynth: {|self|
+    if(self.synthObj.notNil) {
+      self.synthObj.free;
+      self.synthObj=nil;
+    };
+  },
+
+  releaseSynth: {|self|
+    if (self.synthObj.notNil) {
+      self.synthObj.release;
+      self.synthObj=nil;
+    };
+  },
+
 	setArgs: {|self ...args|
-		args=args.asArray;
-		(self.busDictionary.notNil).if({
-			(self.synthArgDictionary.isNil).if({
-				self.synthArgDictionary=Dictionary.new;
-			});
+		args = args.asArray;
+
+		if((self.busDictionary.notNil), {
+			if(self.synthArgDictionary.isNil) { self.synthArgDictionary = Dictionary.new; };
+
 			forBy(0, args.size - 2, 2, {|count|
-				(self.busDictionary.includesKey(args[count])).if({
+				if((self.busDictionary.includesKey(args[count])), {
 					self.server.sendMsg(\c_set,
 						self.busDictionary.at(args[count]),
 						args[count + 1]
@@ -168,12 +189,14 @@
 		});
 		self.synthObj;
 	},
+
 	setArgArray: {|self ...args|
-		args=args.asArray;
-		(self.busDictionary.notNil).if({
+		args = args.asArray;
+		if((self.busDictionary.notNil), {
 			(self.synthArgDictionary.isNil).if({
 				self.synthArgDictionary=Dictionary.new;
 			});
+
 			forBy(0, args.size - 2, 2, {|count|
 				(self.busDictionary.includesKey(args[count])).if({
 					self.server.sendMsg(\c_setn,
@@ -190,22 +213,25 @@
 		});
 		self.synthObj;
 	},
-	getValues: {|self, func|
+
+  getValues: {|self, func|
 		self.busarr.getn(self.busDictionary.size,
 			{|busses|
 				func.value([busses, self.synthArgDictionary]);
 			}
 		);
 	},
-	map: {|self ...args|
+
+  map: {|self ...args|
 		forBy(0, args.size-2, 2, {|i|
 			self.nodeMap.map(args[i], args[i + 1]);
 		});
-		(self.synthObj.notNil).if({
+		if(self.synthObj.notNil) {
 			self.nodeMap.sendToNode(self.synthObj);
-		});
+		};
 		self.nodeMap;
 	},
+
 	mapMsg: {|self ...args|
 		var return;
 		forBy(0, args.size-2, 2, {|i|
@@ -218,6 +244,7 @@
 		});
 		return;
 	},
+
 	terminate: {|self|
 		self.stopSynth;
 		self.nodeMap=nil;
