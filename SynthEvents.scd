@@ -1,27 +1,4 @@
 (
-~makeSynthDef = (
-  reproduce: {|self|
-    self.copy;
-  },
-  makeDefObj: {|self, defName, defFunction, lags|
-    self.synthDefName=defName;
-    self.defObj=SynthDef(defName, defFunction, lags);
-  },
-  makeVariants: {|self, variants|
-    self.defVariants=variants;
-  },
-  sendToServer: {|self, server|
-    (self.defObj.notNil).if({
-      (self.defVariants.notNil).if({
-        self.defObj.variants=self.defVariants;
-      });
-      self.defObj.send(server);
-    }, {
-      'No SynthDef defined'.postln;
-    });
-  }
-);
-
 ~busControlledSynth = (
 	reproduce: {|self, clearBusses=false|
 		var newSelf;
@@ -90,11 +67,12 @@
 	playSynth: {|self, synthArgs, target, addAction, run|
 		var synthArgArr;
 
-    if((self.synthObj.isNil), {
-			(self.nodeMap.isNil).if({ self.makeNodeMap });
-			(run.isNil).if({ run=self.run });
-			(self.fastPlay).if({
-				synthArgArr=synthArgs;
+    if(self.synthObj.isNil) {
+			if((self.nodeMap.isNil), { self.makeNodeMap });
+			if((run.isNil), { run=self.run });
+
+      if((self.fastPlay), {
+				synthArgArr = synthArgs;
 			}, {
 				#synthArgArr, target, addAction, run=self.makeSynthArgs(
 					synthArgs, target, addAction, run
@@ -108,7 +86,8 @@
 			).run(run);
 
 			self.nodeMap.sendToNode(self.synthObj);
-		});
+		};
+
 		self.synthObj;
 	},
 
