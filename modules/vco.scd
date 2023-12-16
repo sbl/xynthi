@@ -39,24 +39,25 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
 ).add;
 
 // synthObj //
-~masterFreq=~busControlledSynth.reproduce;
-~masterFreq.synthDefName=\master_freq;
+~masterFreq = ~busControlledSynth.reproduce;
+~masterFreq.synthDefName = \master_freq;
 ~masterFreq.fastPlay=false;
 ~masterFreq.defaultSettings=[440, 1, 0.02];
 ~masterFreq.makeBusDictionary={|self|
   var busarr, rootIndex;
-  busarr=Bus.control(self.server, 3);
-  rootIndex=busarr.index;
-  self.busDictionary=Dictionary[
+  busarr = Bus.control(self.server, 3);
+  rootIndex = busarr.index;
+  self.busDictionary = Dictionary[
     \freq_in -> rootIndex,
     \tune -> (rootIndex + 1),
     \lag -> (rootIndex + 2)
   ];
   busarr.setn(self.defaultSettings);
-  self.busarr=busarr;
-  self.outbus=Bus.control;
-  self.synthArgDictionary=Dictionary[\out -> self.outbus.index];
+  self.busarr = busarr;
+  self.outbus = Bus.control;
+  self.synthArgDictionary = Dictionary[\out -> self.outbus.index];
 };
+
 ~vcoSynth=~busControlledSynth.reproduce;
 ~vcoSynth.synthDefName=\vco_sine;
 ~vcoSynth.fastPlay=false;
@@ -92,8 +93,8 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
 
 /* ---- */
 // gui //
-~vcoGui=~buildGui.reproduce;
-~vcoGui.synthObj=~vcoSynth;
+~vcoGui = ~buildGui.reproduce;
+~vcoGui.synthObj = ~vcoSynth;
 ~vcoGui.syncSaw=false;
 ~vcoGui.curspec=2;
 ~vcoGui.makeGui={|self, w|
@@ -127,6 +128,7 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
         layout: \vert2
     ));
   } {
+    "no master freq".postln;
     waves=[\sine, \saw, \pulse, \pulself];
     self.elementDictionary.put(\freq,
       EZKnob.new(w, self.elementStyle.knobSize, 'freq', \freq,
@@ -140,7 +142,7 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
   };
 
   self.elementDictionary.put(\fm,
-    EZKnob.new(w, self.elementStyle.knobSize, 'fm', [0, 32, 10],
+    EZKnob.new(w, self.elementStyle.kdnobSize, 'fm', [0, 32, 10],
       action: {|v|
         self.synthObj.setArgs(\fm, v.value);
         self.updateMIDI(\fm, v.value);
@@ -475,6 +477,7 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
   );
   self.responderObj;
 };
+
 ~vcoInstr=(
   reproduce: {|self|
     var newSelf;

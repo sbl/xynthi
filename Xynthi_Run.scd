@@ -99,10 +99,12 @@ s.waitForBoot {
       s.audioBusAllocator.free(e);
     });
   });
+
   // the vcos
   freqInstr = ~masterFreq.reproduce;
   freqInstr.run = true;
   tmpmsg = tmpmsg.add(freqInstr.playSynthMsg);
+
   vco1 = ~vcoInstr.reproduce;
   vco1.theSynth.masterFreq = freqInstr;
   vco1.theSynth.target = groups.at(\vco1);
