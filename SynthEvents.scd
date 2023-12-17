@@ -146,52 +146,70 @@
     };
   },
 
-	setArgs: {|self ...args|
-		args = args.asArray;
+  setArgs: {|self ...args|
+    args = args.asArray;
 
-		if((self.busDictionary.notNil), {
-			if(self.synthArgDictionary.isNil) { self.synthArgDictionary = Dictionary.new; };
+    "".postln;
+    self.synthDefName.postln;
+    "---".postln;
+    "args: ".post;
+    args.postln;
 
-			forBy(0, args.size - 2, 2, {|count|
-				if((self.busDictionary.includesKey(args[count])), {
-					self.server.sendMsg(\c_set,
-						self.busDictionary.at(args[count]),
-						args[count + 1]
-					);
-				}, {
-					self.synthObj.set(args[count], args[count + 1]);
-					self.synthArgDictionary.put(args[count], args[count + 1]);
-				})
-			})
-		}, {
-			'Busses not initialized.'.postln;
-		});
-		self.synthObj;
-	},
+    "synthargs: ".post;
+    self.synthArgDictionary.postln;
 
-	setArgArray: {|self ...args|
-		args = args.asArray;
-		if((self.busDictionary.notNil), {
-			(self.synthArgDictionary.isNil).if({
-				self.synthArgDictionary=Dictionary.new;
-			});
+    "bus: ".post;
+    self.busDictionary.postln;
 
-			forBy(0, args.size - 2, 2, {|count|
-				(self.busDictionary.includesKey(args[count])).if({
-					self.server.sendMsg(\c_setn,
-						self.busDictionary.at(args[count]),
-						args[count + 1].size,
-						args[count + 1]
-					);
-				}, {
-					self.synthObj.setn(args[count], args[count + 1]);
-				})
-			})
-		}, {
-			'Busses not initialized.'.postln;
-		});
-		self.synthObj;
-	},
+    if((self.busDictionary.notNil), {
+      if(self.synthArgDictionary.isNil) { self.synthArgDictionary = Dictionary.new; };
+
+      forBy(0, args.size - 2, 2, {|count|
+        if((self.busDictionary.includesKey(args[count])), {
+          "setting via bus ".post;
+          self.busDictionary.at(args[count]).post;
+          " ".post;
+          args[count + 1].postln;
+
+          self.server.sendMsg(\c_set,
+            self.busDictionary.at(args[count]),
+            args[count + 1]
+          );
+        }, {
+            "no setting via bus".postln;
+            self.synthObj.set(args[count], args[count + 1]);
+            self.synthArgDictionary.put(args[count], args[count + 1]);
+        })
+      })
+    }, {
+      'Busses not initialized.'.postln;
+    });
+    self.synthObj;
+  },
+
+  setArgArray: {|self ...args|
+    args = args.asArray;
+    if((self.busDictionary.notNil), {
+      (self.synthArgDictionary.isNil).if({
+        self.synthArgDictionary=Dictionary.new;
+      });
+
+      forBy(0, args.size - 2, 2, {|count|
+        (self.busDictionary.includesKey(args[count])).if({
+          self.server.sendMsg(\c_setn,
+            self.busDictionary.at(args[count]),
+            args[count + 1].size,
+            args[count + 1]
+          );
+          }, {
+            self.synthObj.setn(args[count], args[count + 1]);
+        })
+      })
+      }, {
+        'Busses not initialized.'.postln;
+    });
+    self.synthObj;
+  },
 
   getValues: {|self, func|
 		self.busarr.getn(self.busDictionary.size,
@@ -210,26 +228,6 @@
 		};
 		self.nodeMap;
 	},
-
-	mapMsg: {|self ...args|
-		var return;
-		forBy(0, args.size-2, 2, {|i|
-			self.nodeMap.map(args[i], args[i + 1]);
-		});
-		(self.synthObj.notNil).if({
-			return=[14, self.synthObj.nodeID] ++ args;
-		}, {
-			return=nil;
-		});
-		return;
-	},
-
-	terminate: {|self|
-		self.stopSynth;
-		self.nodeMap=nil;
-		self.busarr.free;
-		self=nil;
-	}
 );
 
 ~buildGui = (
