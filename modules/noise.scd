@@ -25,18 +25,18 @@ SynthDef(\noise_clip, {|out=0, amp=1|
 }).add;
 
 // synthObj //
-~noise=~busControlledSynth.reproduce;
+~noise = ~busControlledSynth.reproduce;
 ~noise.synthDefName=\noise_white;
 ~noise.fastPlay=false;
 ~noise.defaultSettings=1;
 ~noise.makeBusDictionary={|self|
 	var bus;
-	bus=Bus.control;
-	self.busDictionary=Dictionary[
+	bus = Bus.control;
+	self.busDictionary = Dictionary[
 		\amp -> bus.index
 	];
 	bus.set(self.defaultSettings);
-	self.busarr=bus;
+	self.busarr = bus;
 };
 
 // gui //
