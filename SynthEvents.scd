@@ -29,7 +29,7 @@
     if (self.busDictionary.isNil) { self.makeBusDictionary };
 
     self.busDictionary.keysValuesDo({|key, value|
-      self.nodeMap.map(key, value);
+      self.nodeMap.set(key, value);
     });
     self.nodeMap;
   },
@@ -86,7 +86,9 @@
 				addAction
 			).run(run);
 
-			self.nodeMap.sendToNode(self.synthObj);
+      self.busDictionary.keysValuesDo { |key, busIndex|
+        self.synthObj.map(key, busIndex);
+      }
 		};
 
 		self.synthObj;
@@ -219,7 +221,11 @@
       self.nodeMap.set(args[i], args[i + 1]);
     });
     if(self.synthObj.notNil) {
-      self.nodeMap.sendToNode(self.synthObj);
+
+      self.busDictionary.keysValuesDo { |key, busIndex|
+        self.synthObj.map(key, busIndex);
+      };
+
     };
     self.nodeMap;
   },
