@@ -64,7 +64,8 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
 ~vcoSynth.defaultSettings=[440, 1, 0, 0.5, 1];
 ~vcoSynth.makeBusDictionary={|self|
   var busarr, rootIndex;
-  (self.masterFreq.isNil).if({
+
+  if((self.masterFreq.isNil), {
     busarr=Bus.control(self.server, 5);
     rootIndex=busarr.index;
     self.busDictionary=Dictionary[
