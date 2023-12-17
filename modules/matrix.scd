@@ -31,11 +31,11 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 
 		w.vert({|v|
       // top padding
-			StaticText(v, 40@65).string_("");
+			StaticText(v, 40@60).string_("");
 
 
 			self.outputArr.do({|e, c|
-				StaticText(v, 40@15.9).string_(self.outputNames.at(c)).align_(\right);
+				StaticText(v, 40@16).string_(self.outputNames.at(c)).align_(\right);
 			});
 		}, 40@(22 * outSize));
 

@@ -152,26 +152,16 @@
   setArgs: {|self ...args|
     args = args.asArray;
 
-    "".postln;
-    self.synthDefName.post;
-    "---".postln;
-    "args: ".post;
-    args.postln;
-
-
     if((self.busDictionary.notNil), {
       if(self.synthArgDictionary.isNil) { self.synthArgDictionary = Dictionary.new; };
 
       forBy(0, args.size - 2, 2, {|count|
         if((self.busDictionary.includesKey(args[count])), {
-          "setting via bus ".postln;
-
           self.server.sendMsg(\c_set,
             self.busDictionary.at(args[count]),
             args[count + 1]
           );
         }, {
-            "no setting via bus".postln;
             self.synthObj.set(args[count], args[count + 1]);
             self.synthArgDictionary.put(args[count], args[count + 1]);
         })
@@ -186,7 +176,7 @@
     args = args.asArray;
     if((self.busDictionary.notNil), {
       (self.synthArgDictionary.isNil).if({
-        self.synthArgDictionary=Dictionary.new;
+        self.synthArgDictionary = Dictionary.new;
       });
 
       forBy(0, args.size - 2, 2, {|count|
@@ -215,17 +205,14 @@
 	},
 
   map: {|self ...args|
-    "map message is expected to be not called - find the source".throw;
-
     forBy(0, args.size-2, 2, {|i|
       self.nodeMap.set(args[i], args[i + 1]);
     });
-    if(self.synthObj.notNil) {
 
+    if(self.synthObj.notNil) {
       self.busDictionary.keysValuesDo { |key, busIndex|
         self.synthObj.map(key, busIndex);
       };
-
     };
     self.nodeMap;
   },

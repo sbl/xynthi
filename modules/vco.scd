@@ -129,7 +129,6 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
         layout: \vert2
     ));
   } {
-    "no master freq".postln;
     waves=[\sine, \saw, \pulse, \pulself];
     self.elementDictionary.put(\freq,
       EZKnob.new(w, self.elementStyle.knobSize, 'freq', \freq,
