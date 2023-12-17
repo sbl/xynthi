@@ -142,7 +142,7 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
   };
 
   self.elementDictionary.put(\fm,
-    EZKnob.new(w, self.elementStyle.kdnobSize, 'fm', [0, 32, 10],
+    EZKnob.new(w, self.elementStyle.knobSize, 'fm', [0, 32, 10],
       action: {|v|
         self.synthObj.setArgs(\fm, v.value);
         self.updateMIDI(\fm, v.value);
