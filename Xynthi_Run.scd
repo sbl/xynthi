@@ -309,313 +309,312 @@ s.waitForBoot {
     modpod: modpod
   );
 
-  // just hold on a sec, okay!
-
   s.sync;
 
-  ///// ......
+  // just hold on a sec, okay!
 
+  1.wait;
+
+  ///// ......
 
 
   // do the gui
   quickPre = Array.newClear(20);
   // make the window
   "Creating GUI".postln;
-  {
-    ~synthWin = PageLayout("Xynthi");
-    ActionButton(~synthWin, " Save ", {
-      Dialog.savePanel({|path|
-        var state;
+
+  ~synthWin = PageLayout("Xynthi");
+  ActionButton(~synthWin, " Save ", {
+    Dialog.savePanel({|path|
+      var state;
+      state = Dictionary.new;
+      ~xynthi.modDict.keysValuesDo({|key, value|
+        state.put(key, value.getValues);
+      });
+      state.writeTextArchive(path);
+    });
+  });
+
+  ActionButton(~synthWin, " Load ", {
+    Dialog.getPaths({|path|
+      var state, name;
+      state = Object.readTextArchive(path[0]);
+      state.keysValuesDo({|key, value|
+        try { ~xynthi.modDict.at(key).setValues(value); }
+      });
+      name = path[0].split;
+      prename.string_(' ' ++ name[name.size - 1]);
+    });
+  });
+
+  12.do({|i|
+    Button(~synthWin, 18@16)
+    .states_([[(i + 1).asString]])
+    .mouseDownAction_({|v, x, y, mod|
+      var state;
+      ((mod == 131332) || (mod == 131330)).if({
         state = Dictionary.new;
         ~xynthi.modDict.keysValuesDo({|key, value|
           state.put(key, value.getValues);
         });
-        state.writeTextArchive(path);
-      });
-    });
-
-    ActionButton(~synthWin, " Load ", {
-      Dialog.getPaths({|path|
-        var state, name;
-        state = Object.readTextArchive(path[0]);
-        state.keysValuesDo({|key, value|
-          try { ~xynthi.modDict.at(key).setValues(value); }
-        });
-        name = path[0].split;
-        prename.string_(' ' ++ name[name.size - 1]);
-      });
-    });
-
-    12.do({|i|
-      Button(~synthWin, 18@16)
-      .states_([[(i + 1).asString]])
-      .mouseDownAction_({|v, x, y, mod|
-        var state;
-        ((mod == 131332) || (mod == 131330)).if({
-          state = Dictionary.new;
-          ~xynthi.modDict.keysValuesDo({|key, value|
-            state.put(key, value.getValues);
-          });
-          quickPre.put(i, state);
-        }, {
-          (quickPre.at(i).notNil).if({
-            state = quickPre.at(i);
-            state.keysValuesDo({|key, value|
-              try { ~xynthi.modDict.at(key).setValues(value); }
-            });
-            prename.string_(' ' ++ (i + 1).asString);
-          });
-        });
-      });
-    });
-
-    prename = StaticText(~synthWin, 80@18).string_("Default");
-    Button(~synthWin, 70@18)
-    .states_([["Batch"]])
-    .action_({
-      var win, pres, size;
-      SelectButtonSet(win = MultiPageLayout.new("Select group:"),
-        ["Main", "Matrix", "ModPod"],
-        {|in|
-          switch (in)
-          { 0 } { pres = quickPre; size = 11; }
-          { 1 } { pres = ~xynthi.matrix.quickPre; size = 8 }
-          { 2 } { pres = ~xynthi.modpod.quickPre; size = 23 };
-          win.close;
-          Dialog.getPaths({|paths|
-            paths = paths.copyRange(0, size);
-            paths.do({|e, c|
-              pres.put(c, Object.readTextArchive(e));
-            });
-          });
-        },
-        nil,
-        nil,
-        70,
-        20
-      );
-      win.resizeToFit;
-      win.front;
-    });
-
-
-    // RECORDING
-    Button(~synthWin, 75@18)
-    .states_([["prepare rec"], ["start rec", Color.white, Color.black],
-      ["recording", Color.white, Color.red], ["stopped"]])
-    .action_({|v|
-      switch(v.value)
-      { 1 } { s.prepareForRecord }
-      { 2 } { s.record }
-      { 3 } { s.stopRecording; v.value_(0) };
-    });
-
-    // MutE
-    Button(~synthWin, 70@18)
-    .states_([["mute"], ["unmute"]])
-    .action_({|v|
-      (v.value == 1).if({
-        Routine({
-          muteSynth = Synth.tail(~xynthi.groups.at(\out), \soft_mute_2);
-          0.02.wait;
-          s.asTarget.run(false);
-        }).play;
+        quickPre.put(i, state);
       }, {
-        s.asTarget.run(true);
-        muteSynth.release;
+        (quickPre.at(i).notNil).if({
+          state = quickPre.at(i);
+          state.keysValuesDo({|key, value|
+            try { ~xynthi.modDict.at(key).setValues(value); }
+          });
+          prename.string_(' ' ++ (i + 1).asString);
+        });
       });
     });
+  });
 
-    // REBOOT
-    Button(~synthWin, 70@18)
-    .states_([[" Reboot "]])
-    .action_({
-      ~synthWin.close;
-      CCResponder.removeAll;
+  prename = StaticText(~synthWin, 80@18).string_("Default");
+  Button(~synthWin, 70@18)
+  .states_([["Batch"]])
+  .action_({
+    var win, pres, size;
+    SelectButtonSet(win = MultiPageLayout.new("Select group:"),
+      ["Main", "Matrix", "ModPod"],
+      {|in|
+        switch (in)
+        { 0 } { pres = quickPre; size = 11; }
+        { 1 } { pres = ~xynthi.matrix.quickPre; size = 8 }
+        { 2 } { pres = ~xynthi.modpod.quickPre; size = 23 };
+        win.close;
+        Dialog.getPaths({|paths|
+          paths = paths.copyRange(0, size);
+          paths.do({|e, c|
+            pres.put(c, Object.readTextArchive(e));
+          });
+        });
+      },
+      nil,
+      nil,
+      70,
+      20
+    );
+    win.resizeToFit;
+    win.front;
+  });
+
+
+  // RECORDING
+  Button(~synthWin, 75@18)
+  .states_([["prepare rec"], ["start rec", Color.white, Color.black],
+    ["recording", Color.white, Color.red], ["stopped"]])
+  .action_({|v|
+    switch(v.value)
+    { 1 } { s.prepareForRecord }
+    { 2 } { s.record }
+    { 3 } { s.stopRecording; v.value_(0) };
+  });
+
+  // MutE
+  Button(~synthWin, 70@18)
+  .states_([["mute"], ["unmute"]])
+  .action_({|v|
+    (v.value == 1).if({
       Routine({
-        s.quit;
-        s.wait(\done);
-        0.1.wait;
-        s.waitForBoot({
-          "Xynthi_Run.rtf".loadPaths;
-        });
-      }).play
+        muteSynth = Synth.tail(~xynthi.groups.at(\out), \soft_mute_2);
+        0.02.wait;
+        s.asTarget.run(false);
+      }).play;
+    }, {
+      s.asTarget.run(true);
+      muteSynth.release;
     });
+  });
 
-    // vcos
-    ~synthWin.startRow;
-    ~leftWin = FlowView(~synthWin, 245@470);
-    ~xynthi.vco1.theGui.displayGui(~leftWin);
-    ~leftWin.startRow;
+  // REBOOT
+  Button(~synthWin, 70@18)
+  .states_([[" Reboot "]])
+  .action_({
+    ~synthWin.close;
+    CCResponder.removeAll;
+    Routine({
+      s.quit;
+      s.wait(\done);
+      0.1.wait;
+      s.waitForBoot({
+        "Xynthi_Run.rtf".loadPaths;
+      });
+    }).play
+  });
+
+  // vcos
+
+  ~synthWin.startRow;
+  ~leftWin = FlowView(~synthWin, 245@470);
+  ~xynthi.vco1.theGui.displayGui(~leftWin);
+  ~leftWin.startRow;
+
+  ~xynthi.vco2.theGui.displayGui(~leftWin);
+  ~leftWin.startRow;
+
+  ~xynthi.vco3.theGui.displayGui(~leftWin);
+  ~leftWin.startRow;
+
+  // IO
+
+  ~xynthi.in1.theGui.displayGui(~leftWin);
+  ~xynthi.in2.theGui.valueDictionary.put(\in, 2);
+  ~xynthi.in2.theGui.displayGui(~leftWin);
+
+  // noise, ring, dist
+  ~midWin = FlowView(~synthWin, 280@470);
+  ~xynthi.noise1.theGui.displayGui(~midWin);
+  ~xynthi.ringer.theGui.displayGui(~midWin);
+  ~xynthi.dist.theGui.displayGui(~midWin);
+
+  ~midWin.startRow;
+
+  // matrix
+
+  ~xynthi.matrix.makeMatrix(~midWin);
+
+  ~rightWin = FlowView(~synthWin, 340@470);
+  ~xynthi.vcf.theGui.displayGui(~rightWin);
+
+  ~rightWin.startRow;
+
+  // output mix
+  ~xynthi.mix1.theGui.displayGui(~rightWin);
+  ~xynthi.mix2.theGui.displayGui(~rightWin);
+  ~rightWin.startRow;
+
+  // delay
+  ~xynthi.del.theGui.displayGui(~rightWin);
+  ~rightWin.startRow;
+
+  // reverb
+  ~xynthi.rev.theGui.displayGui(~rightWin);
+  ~synthWin.startRow;
+
+  // envelopes
+  ~xynthi.env1.theGui.displayGui(~synthWin);
+  ~xynthi.env2.theGui.displayGui(~synthWin);
+
+  // lfos
+  ~xynthi.lfo1.theGui.displayGui(~synthWin);
+  ~xynthi.lfo2.theGui.displayGui(~synthWin);
+  ~xynthi.lfo3.theGui.displayGui(~synthWin);
 
 
-    ~xynthi.vco2.theGui.displayGui(~leftWin);
-    ~leftWin.startRow;
-
-    ~xynthi.vco3.theGui.displayGui(~leftWin);
-    ~leftWin.startRow;
-
-    // IO
-    ~xynthi.in1.theGui.displayGui(~leftWin);
-    ~xynthi.in2.theGui.valueDictionary.put(\in, 2);
-    ~xynthi.in2.theGui.displayGui(~leftWin);
+  ~synthWin.startRow;
+  ~xynthi.modpod.gui(~synthWin);
 
 
+  ~synthWin.startRow;
 
-    // noise, ring, dist
-    ~midWin = FlowView(~synthWin, 280@470);
-    ~xynthi.noise1.theGui.displayGui(~midWin);
-    ~xynthi.ringer.theGui.displayGui(~midWin);
-    ~xynthi.dist.theGui.displayGui(~midWin);
-
-    ~midWin.startRow;
-
-    // matrix
-    ~xynthi.matrix.makeMatrix(~midWin);
-
-    ~rightWin = FlowView(~synthWin, 340@470);
-    ~xynthi.vcf.theGui.displayGui(~rightWin);
-
-    ~rightWin.startRow;
-
-    // output mix
-    ~xynthi.mix1.theGui.displayGui(~rightWin);
-    ~xynthi.mix2.theGui.displayGui(~rightWin);
-    ~rightWin.startRow;
-
-    // delay
-    ~xynthi.del.theGui.displayGui(~rightWin);
-    ~rightWin.startRow;
-
-    // reverb
-    ~xynthi.rev.theGui.displayGui(~rightWin);
-    ~synthWin.startRow;
-
-    // envelopes
-    ~xynthi.env1.theGui.displayGui(~synthWin);
-    ~xynthi.env2.theGui.displayGui(~synthWin);
-
-    // lfos
-    ~xynthi.lfo1.theGui.displayGui(~synthWin);
-    ~xynthi.lfo2.theGui.displayGui(~synthWin);
-    ~xynthi.lfo3.theGui.displayGui(~synthWin);
+  // cc's
+  ActionButton(~synthWin, "Init CC Controllers", {
+    "Xynthi_cc.scd".loadRelative;
+    "CC Initialized".postln;
+  });
 
 
-    ~synthWin.startRow;
-    ~xynthi.modpod.gui(~synthWin);
-
-
-    ~synthWin.startRow;
-
-    // cc's
-    ActionButton(~synthWin, "Init CC Controllers", {
-      "Xynthi_cc.scd".loadRelative;
-      "CC Initialized".postln;
-    });
-
-
-    // keyboard stuff
-    heldNotes = List.new;
-    noteOnFunc = {|src, chan, note, vel|
-      ~xynthi.vco1.theSynth.masterFreq.setArgs(\freq_in, note.midicps);
-      ~xynthi.env1.theSynth.setArgs(\gate, 1);
-      ~xynthi.env2.theSynth.setArgs(\gate, 1);
-      heldNotes.add(note);
+  // keyboard stuff
+  heldNotes = List.new;
+  noteOnFunc = {|src, chan, note, vel|
+    ~xynthi.vco1.theSynth.masterFreq.setArgs(\freq_in, note.midicps);
+    ~xynthi.env1.theSynth.setArgs(\gate, 1);
+    ~xynthi.env2.theSynth.setArgs(\gate, 1);
+    heldNotes.add(note);
+    {
+      ~xynthi.env1.theGui.elementDictionary.at(\gate).value_(1);
+      ~xynthi.env2.theGui.elementDictionary.at(\gate).value_(1);
+    }.defer;
+  };
+  noteOffFunc = {|src, chan, note, vel|
+    heldNotes.removeAt(heldNotes.indexOf(note));
+    (heldNotes.size < 1).if({
+      ~xynthi.env1.theSynth.setArgs(\gate, 0);
+      ~xynthi.env2.theSynth.setArgs(\gate, 0);
       {
-        ~xynthi.env1.theGui.elementDictionary.at(\gate).value_(1);
-        ~xynthi.env2.theGui.elementDictionary.at(\gate).value_(1);
+        ~xynthi.env1.theGui.elementDictionary.at(\gate).value_(0);
+        ~xynthi.env2.theGui.elementDictionary.at(\gate).value_(0);
       }.defer;
-    };
-    noteOffFunc = {|src, chan, note, vel|
-      heldNotes.removeAt(heldNotes.indexOf(note));
-      (heldNotes.size < 1).if({
-        ~xynthi.env1.theSynth.setArgs(\gate, 0);
-        ~xynthi.env2.theSynth.setArgs(\gate, 0);
-        {
-          ~xynthi.env1.theGui.elementDictionary.at(\gate).value_(0);
-          ~xynthi.env2.theGui.elementDictionary.at(\gate).value_(0);
-        }.defer;
-      }, {
-        ~xynthi.vco1.theSynth.masterFreq.setArgs(\freq_in, heldNotes.last.midicps);
-      });
-    };
+    }, {
+      ~xynthi.vco1.theSynth.masterFreq.setArgs(\freq_in, heldNotes.last.midicps);
+    });
+  };
 
-    Button(~synthWin, 130@18)
-    .states_([["Turn Keyboard On"], ["Turn Keyboard Off"]])
-    .action_({|v|
-      (v.value == 0).if({
-        noteOn.remove;
-        noteOff.remove;
-        bend.remove;
-      }, {
-        noteOn = NoteOnResponder(noteOnFunc);
-        noteOff = NoteOffResponder(noteOffFunc);
-        bend = BendResponder({|src, chan, val|
-          val = val/16383;
-          val = bendRange.value * 2 * val - bendRange.value;
-          ~xynthi.vco1.theSynth.masterFreq.setArgs(\tune, val.midiratio);
+  Button(~synthWin, 130@18)
+  .states_([["Turn Keyboard On"], ["Turn Keyboard Off"]])
+  .action_({|v|
+    (v.value == 0).if({
+      noteOn.remove;
+      noteOff.remove;
+      bend.remove;
+    }, {
+      noteOn = NoteOnResponder(noteOnFunc);
+      noteOff = NoteOffResponder(noteOffFunc);
+      bend = BendResponder({|src, chan, val|
+        val = val/16383;
+        val = bendRange.value * 2 * val - bendRange.value;
+        ~xynthi.vco1.theSynth.masterFreq.setArgs(\tune, val.midiratio);
+      });
+    });
+  });
+
+  StaticText(~synthWin, 80@18).string_("Bend Range: ").align_(\right);
+  NumberBox(~synthWin, 20@18)
+  .clipLo_(0)
+  .clipHi_(48)
+  .value_(2)
+  .action_({|v|
+    bendRange = v.value;
+  });
+
+
+  StaticText(~synthWin, 40@18).string_("Lag: ").align_(\right);
+  NumberBox(~synthWin, 40@18)
+  .clipLo_(0.01)
+  .clipHi_(4)
+  .step_(0.05)
+  .value_(0.02)
+  .action_({|v|
+    ~xynthi.vco1.theSynth.masterFreq.setArgs(\lag, v.value);
+  });
+
+  // key actions
+  theMods = [~xynthi.rev, ~xynthi.del, ~xynthi.vco1, ~xynthi.vco2,
+    ~xynthi.vco3, ~xynthi.in1, ~xynthi.in2, ~xynthi.noise1,
+    ~xynthi.vcf, ~xynthi.mix1, ~xynthi.mix2
+  ];
+  Button(~synthWin, 160@18)
+  .states_([["Turn Key Actions On"], ["Turn Key Actions Off"]])
+  .action_({|v|
+    (v.value == 0).if({
+      ~synthWin.window.view.keyDownAction_(nil);
+    }, {
+      ~synthWin.window.view.keyDownAction_({|v, char, mod, uni|
+        (char == $e).if({
+          ~xynthi.env1.theGui.elementDictionary.at(\gate).valueAction_(
+            (~xynthi.env1.theGui.elementDictionary.at(\gate).value - 1).abs
+          );
+          ~xynthi.env2.theGui.elementDictionary.at(\gate).valueAction_(
+            (~xynthi.env2.theGui.elementDictionary.at(\gate).value - 1).abs
+          );
+        }, {
+          ((uni > 46) && (uni < 58)).if({
+            uni = uni - 47;
+            theMods.at(uni).theGui.elementDictionary.at(\mute).valueAction_(
+              (theMods.at(uni).theGui.elementDictionary.at(\mute).value - 1).abs
+            );
+          })
         });
       });
     });
-
-    StaticText(~synthWin, 80@18).string_("Bend Range: ").align_(\right);
-    NumberBox(~synthWin, 20@18)
-    .clipLo_(0)
-    .clipHi_(48)
-    .value_(2)
-    .action_({|v|
-      bendRange = v.value;
-    });
+  });
 
 
-    StaticText(~synthWin, 40@18).string_("Lag: ").align_(\right);
-    NumberBox(~synthWin, 40@18)
-    .clipLo_(0.01)
-    .clipHi_(4)
-    .step_(0.05)
-    .value_(0.02)
-    .action_({|v|
-      ~xynthi.vco1.theSynth.masterFreq.setArgs(\lag, v.value);
-    });
-
-    // key actions
-    theMods = [~xynthi.rev, ~xynthi.del, ~xynthi.vco1, ~xynthi.vco2,
-      ~xynthi.vco3, ~xynthi.in1, ~xynthi.in2, ~xynthi.noise1,
-      ~xynthi.vcf, ~xynthi.mix1, ~xynthi.mix2
-    ];
-    Button(~synthWin, 160@18)
-    .states_([["Turn Key Actions On"], ["Turn Key Actions Off"]])
-    .action_({|v|
-      (v.value == 0).if({
-        ~synthWin.window.view.keyDownAction_(nil);
-      }, {
-        ~synthWin.window.view.keyDownAction_({|v, char, mod, uni|
-          (char == $e).if({
-            ~xynthi.env1.theGui.elementDictionary.at(\gate).valueAction_(
-              (~xynthi.env1.theGui.elementDictionary.at(\gate).value - 1).abs
-            );
-            ~xynthi.env2.theGui.elementDictionary.at(\gate).valueAction_(
-              (~xynthi.env2.theGui.elementDictionary.at(\gate).value - 1).abs
-            );
-          }, {
-            ((uni > 46) && (uni < 58)).if({
-              uni = uni - 47;
-              theMods.at(uni).theGui.elementDictionary.at(\mute).valueAction_(
-                (theMods.at(uni).theGui.elementDictionary.at(\mute).value - 1).abs
-              );
-            })
-          });
-        });
-      });
-    });
-
-
-    ~synthWin.resizeToFit;
-    ~synthWin.front;
-    // FIXME(sbl): revert after debug
-    // ~synthWin.window.userCanClose_(false);
-
-  }.defer;
+  ~synthWin.resizeToFit;
+  ~synthWin.front;
+  // FIXME(sbl): revert after debug
+  // ~synthWin.window.userCanClose_(false);
 
 
 };
