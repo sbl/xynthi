@@ -74,8 +74,8 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 			self.elementDictionary.put(\sync,
 				ToggleButton(v, " ^ ", {
 					var curval, newspec, newact;
-					self.synthObj.nodeMap.map(\freq, self.syncObj.busDictionary.at(\freq));
-					self.synthObj.nodeMap.sendToNode(self.synthObj.synthObj);
+					self.synthObj.map(\freq, self.syncObj.busDictionary.at(\freq));
+
 					curval=self.elementDictionary.at(\freq).controlSpec.unmap(
 						self.elementDictionary.at(\freq).value
 					);
@@ -99,8 +99,8 @@ SynthDef(\moog_vcf_2, {|in=21, out=0, freq=440, tune=1, q=0.75, fm_in=37, fm=0, 
 					self.elementDictionary.at(\freq).value_(curval);
 				}, {
 					var curval, newspec, newact;
-					self.synthObj.nodeMap.map(\freq, self.synthObj.busDictionary.at(\freq));
-					self.synthObj.nodeMap.sendToNode(self.synthObj.synthObj);
+					self.synthObj.map(\freq, self.synthObj.busDictionary.at(\freq));
+
 					self.synthObj.setArgs(\tune, 1);
 					curval=self.elementDictionary.at(\freq).controlSpec.unmap(
 						self.elementDictionary.at(\freq).value

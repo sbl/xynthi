@@ -317,8 +317,8 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
     self.elementDictionary.put(\sync,
       ToggleButton(w, " ^ ", {
         var newspec, newact, curval;
-        self.synthObj.nodeMap.map(\freq, self.syncObj.busDictionary.at(\freq));
-        self.synthObj.nodeMap.sendToNode(self.synthObj.synthObj);
+
+        self.synthObj.map(\freq, self.syncObj.busDictionary.at(\freq));
         (self.elementDictionary.at(\wave).value==3).if({
           newspec=[0, 64].asSpec;
         }, {
@@ -347,8 +347,8 @@ SynthDef(\vco_ssync, {|out=0, freq=440, tune=1, fm_in=37, fm=0, amp=1|
         (self.elementDictionary.at(\wave).value==3).if({
           self.elementDictionary.at(\wave).valueAction_(1);
         });
-        self.synthObj.nodeMap.map(\freq, self.synthObj.busDictionary.at(\freq));
-        self.synthObj.nodeMap.sendToNode(self.synthObj.synthObj);
+        self.synthObj.map(\freq, self.synthObj.busDictionary.at(\freq));
+
         self.synthObj.setArgs(\tune, 1);
         newspec=\freq.asSpec;
         newact={|v|
