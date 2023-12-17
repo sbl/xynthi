@@ -44,6 +44,7 @@ s.waitForBoot {
 
   "Initializing Synths".postln;
 
+  // msg is initially sent to the server
   msg = List.new;
   tmpmsg = List.new;
   unpackMsg = {|arr|
@@ -101,6 +102,7 @@ s.waitForBoot {
   });
 
   // the vcos
+
   freqInstr = ~masterFreq.reproduce;
   freqInstr.run = true;
   tmpmsg = tmpmsg.add(freqInstr.playSynthMsg);
@@ -110,11 +112,13 @@ s.waitForBoot {
   vco1.theSynth.target = groups.at(\vco1);
   vco1.theSynth.run = false;
   tmpmsg = tmpmsg.add(vco1.theSynth.playSynthMsg([\fm_in, matrix.inputArr[0], \out, matrix.outputArr[0]]));
+
   vco2 = ~vcoInstr.reproduce;
   vco2.theSynth.target = groups.at(\vco2);
   vco2.theSynth.run = false;
   tmpmsg = tmpmsg.add(vco2.theSynth.playSynthMsg([\fm_in, matrix.inputArr[1], \out, matrix.outputArr[1]]));
   vco2.theGui.syncObj = vco1.theSynth;
+
   vco3 = ~vcoInstr.reproduce;
   vco3.theSynth.target = groups.at(\vco3);
   vco3.theSynth.run = false;
@@ -130,6 +134,7 @@ s.waitForBoot {
   in2.theSynth.target = groups.at(\in2);
   in2.theSynth.run = false;
   tmpmsg = tmpmsg.add(in2.theSynth.playSynthMsg([\out, matrix.outputArr[4]]));
+
   noise1 = ~noiseInstr.reproduce;
   noise1.theSynth.target = groups.at(\noise1);
   noise1.theSynth.run = false;
@@ -225,10 +230,13 @@ s.waitForBoot {
   tmpmsg = tmpmsg.add(env2.theSynth.playSynthMsg([\ctrl_out, env2.theSynth.outbus.index]));
   tmparr = env2.theSynth.env.asArray;
   tmpmsg = tmpmsg.add([\n_setn, env2.theSynth.synthObj.nodeID, tmparr.size] ++ tmparr);
-  unpackMsg.value(tmpmsg);
-  s.listSendBundle(0.1, msg);
 
-  // all setup for the modpod
+
+  // init synths
+  unpackMsg.value(tmpmsg);
+  "bundle msg ".post;
+  msg.postln;
+  s.listSendBundle(0.1, msg);
   s.sync;
 
   // modpod
@@ -308,12 +316,13 @@ s.waitForBoot {
   ///// ......
 
 
+
   // do the gui
   quickPre = Array.newClear(20);
   // make the window
   "Creating GUI".postln;
   {
-    ~synthWin = MultiPageLayout("Xynthi");
+    ~synthWin = PageLayout("Xynthi");
     ActionButton(~synthWin, " Save ", {
       Dialog.savePanel({|path|
         var state;
@@ -433,13 +442,12 @@ s.waitForBoot {
       }).play
     });
 
-
     // vcos
     ~synthWin.startRow;
     ~leftWin = FlowView(~synthWin, 245@470);
     ~xynthi.vco1.theGui.displayGui(~leftWin);
-    ~xynthi.vco1.theGui.displayGui(~leftWin);
     ~leftWin.startRow;
+
 
     ~xynthi.vco2.theGui.displayGui(~leftWin);
     ~leftWin.startRow;
@@ -451,6 +459,8 @@ s.waitForBoot {
     ~xynthi.in1.theGui.displayGui(~leftWin);
     ~xynthi.in2.theGui.valueDictionary.put(\in, 2);
     ~xynthi.in2.theGui.displayGui(~leftWin);
+
+
 
     // noise, ring, dist
     ~midWin = FlowView(~synthWin, 280@470);
@@ -599,11 +609,14 @@ s.waitForBoot {
       });
     });
 
+
     ~synthWin.resizeToFit;
     ~synthWin.front;
-
     // FIXME(sbl): revert after debug
     // ~synthWin.window.userCanClose_(false);
+
   }.defer;
+
+
 };
 )
