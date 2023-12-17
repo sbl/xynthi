@@ -30,11 +30,14 @@ SynthDef(\matrix_router_fb, {|i_in=32, i_out=0|
 		self.boxState = Array.fill2D(outSize, inSize, 0);
 
 		w.vert({|v|
+      // top padding
 			StaticText(v, 40@65).string_("");
+
+
 			self.outputArr.do({|e, c|
-				StaticText(v, 40@12).string_(self.outputNames.at(c)).align_(\right);
+				StaticText(v, 40@15.9).string_(self.outputNames.at(c)).align_(\right);
 			});
-		}, 40@(18 * outSize));
+		}, 40@(22 * outSize));
 
     w.vert({|v|
 			v.flow({|x|
